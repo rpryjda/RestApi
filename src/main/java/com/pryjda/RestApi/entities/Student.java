@@ -1,13 +1,15 @@
 package com.pryjda.RestApi.entities;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
+@Table(name = "student")
 public class Student {
 
     @Id
@@ -20,5 +22,9 @@ public class Student {
     private String academicYear;
     private String courseOfStudy;
     private int indexNumber;
+
+    @ManyToMany(mappedBy = "attendanceList")
+    @JsonIgnore
+    private Set<Lecture> lectures = new HashSet<>();
 
 }
