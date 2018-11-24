@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -24,8 +23,8 @@ public class Lecture {
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "student_lecture",
-            joinColumns = {@JoinColumn(name = "student_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "lecture_id", referencedColumnName = "id")})
+            joinColumns = {@JoinColumn(name = "lecture_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "student_id", referencedColumnName = "id")})
     @JsonIgnore
     private Set<Student> attendanceList = new HashSet<>();
 
