@@ -13,12 +13,12 @@ public class LectureController {
     @Autowired
     private LectureRepository lectureRepository;
 
-    @GetMapping(name = "/lectures")
+    @GetMapping("/lectures")
     public List<Lecture> retrieveAllLectures() {
         return lectureRepository.findAll();
     }
 
-    @PostMapping(name = "/lectures")
+    @PostMapping("/lectures")
     public Lecture createLecture(@RequestBody Lecture lecture) {
         return lectureRepository.save(lecture);
     }
