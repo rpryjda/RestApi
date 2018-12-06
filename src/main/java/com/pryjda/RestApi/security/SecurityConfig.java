@@ -19,6 +19,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         auth.inMemoryAuthentication()
                 .withUser(users.username("User").password("user123").roles("USER"))
+                .withUser(users.username("jan.nowak@gmail.com").password("1").roles("USER"))
+                .withUser(users.username("adam.kowalski@gmail.com").password("2").roles("USER"))
+                .withUser(users.username("piotr.rybka@gmail.com").password("3").roles("USER"))
+                .withUser(users.username("marcel.chrobry@gmail.com").password("4").roles("USER"))
+                .withUser(users.username("robert.mak@gmail.com").password("5").roles("USER"))
                 .withUser(users.username("Admin").password("admin123").roles("USER", "ADMIN"));
     }
 
@@ -27,15 +32,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.GET, "/students").hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST, "/students").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/students/*").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/students/*").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/students/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/students/alter/password/*").hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, "/lectures").hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST, "/lectures").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/lectures/*").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/lectures/*").hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET, "/students/*").hasRole("USER")
-                .antMatchers(HttpMethod.PUT, "/students/*").hasRole("USER")
-                .antMatchers(HttpMethod.POST, "/registery/*/*").hasRole("USER")
+                .antMatchers(HttpMethod.POST, "/registry/lectures/*").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/my-data").hasRole("USER")
+                .antMatchers(HttpMethod.PUT, "/my-data").hasRole("USER")
+                .antMatchers(HttpMethod.PUT, "/alter/password").hasRole("USER")
                 .and()
                 .httpBasic()
                 .and()

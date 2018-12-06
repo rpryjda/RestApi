@@ -1,13 +1,16 @@
 package com.pryjda.RestApi.controller;
 
-import com.pryjda.RestApi.entities.Lecture;
 import com.pryjda.RestApi.entities.Student;
 import com.pryjda.RestApi.repository.LectureRepository;
 import com.pryjda.RestApi.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
+import java.util.Optional;
 
 @RestController
 public class AttendanceController {
@@ -17,22 +20,26 @@ public class AttendanceController {
     @Autowired
     private LectureRepository lectureRepository;
 
-    @PostMapping("/registery/{id_lecture}/{id_student}")
-    public void assignToAttendanceList(@PathVariable(value = "id_student") Long idStudent,
-                                       @PathVariable(value = "id_lecture") Long idLecture) {
+    @PostMapping("/registry/lectures/{id_lecture}")
+    public ResponseEntity<?> assignLoggedStudentToAttendanceList(@PathVariable(value = "id_lecture") Long idLecture) {
 
-        Student student = studentRepository
-                .findById(idStudent)
-                .orElseThrow(() -> new RuntimeException("Student with id=" + idStudent + " doesn't exist"));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
 
-        Lecture lecture = lectureRepository
-                .findById(idLecture)
-                .orElseThrow(() -> new RuntimeException("Lecture with id=" + idLecture + " doesn't exist"));
+        return lectureRepository.findById(idLecture)
+                .map(lecture -> {
+                    Student student = studentRepository.findStudentByEmail(email);
 
-        Set<Student> attendanceRegistery = lecture.getAttendanceList();
-        attendanceRegistery.add(student);
-        lectureRepository.save(lecture);
+                    Optional<Student> optionalStudent = Optional.ofNullable(student);
 
+                    return optionalStudent
+                            .map(item -> {
+                                lecture.getAttendanceList().add(student);
+                                lectureRepository.save(lecture);
+                                return new ResponseEntity<>(HttpStatus.CREATED);
+                            })
+                            .orElse(ResponseEntity.notFound().build());
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
-
 }
