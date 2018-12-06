@@ -1,7 +1,7 @@
 package com.pryjda.RestApi.controller;
 
 import com.pryjda.RestApi.entities.Lecture;
-import com.pryjda.RestApi.repository.LectureRepository;
+import com.pryjda.RestApi.service.LectureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,45 +13,45 @@ import java.util.List;
 public class LectureController {
 
     @Autowired
-    private LectureRepository lectureRepository;
+    private LectureService lectureService;
 
     @GetMapping("/lectures")
     public ResponseEntity<List<Lecture>> retrieveAllLectures() {
 
-        return lectureRepository.findAll()
+        return lectureService.getLectures()
                 .stream()
                 .findFirst()
-                .map(item -> new ResponseEntity<>(lectureRepository.findAll(), HttpStatus.OK))
+                .map(item -> new ResponseEntity<>(lectureService.getLectures(), HttpStatus.OK))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/lectures")
     public ResponseEntity<Lecture> createLecture(@RequestBody Lecture lecture) {
-        lectureRepository.save(lecture);
+        lectureService.createLecture(lecture);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @PutMapping("/lectures/{id}")
     public ResponseEntity<?> updateLectureById(@PathVariable(value = "id") Long id, @RequestBody Lecture changedLecture) {
 
-        return lectureRepository.findById(id)
-                .map(lecture -> {
-                    lecture.setDescription(changedLecture.getDescription());
-                    lecture.setTitle(changedLecture.getTitle());
-                    lecture.setLecturer(changedLecture.getLecturer());
-                    lectureRepository.save(lecture);
-                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        boolean isUpdated = lectureService.updateLecture(id, changedLecture);
+
+        if (isUpdated) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/lectures/{id}")
     public ResponseEntity<?> deleteLectureById(@PathVariable(value = "id") Long id) {
 
-        return lectureRepository.findById(id)
-                .map(lecture -> {
-                    lectureRepository.delete(lecture);
-                    return new ResponseEntity<>(HttpStatus.OK);
-                }).orElse(ResponseEntity.notFound().build());
+        boolean isDeleted = lectureService.deleteLecture(id);
+
+        if (isDeleted) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
