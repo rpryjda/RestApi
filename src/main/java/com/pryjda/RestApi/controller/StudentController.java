@@ -1,7 +1,7 @@
 package com.pryjda.RestApi.controller;
 
 import com.pryjda.RestApi.entities.Student;
-import com.pryjda.RestApi.repository.StudentRepository;
+import com.pryjda.RestApi.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,59 +16,52 @@ import java.util.Optional;
 public class StudentController {
 
     @Autowired
-    private StudentRepository studentRepository;
+    private StudentService studentService;
 
     @GetMapping("/students")
     public ResponseEntity<List<Student>> retrieveAllStudents() {
 
-        return studentRepository.findAll()
+        return studentService.getStudents()
                 .stream()
                 .findFirst()
-                .map(student -> new ResponseEntity<>(studentRepository.findAll(), HttpStatus.OK))
+                .map(student -> new ResponseEntity<>(studentService.getStudents(), HttpStatus.OK))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/students")
     public ResponseEntity<Student> createStudent(@RequestBody Student student) {
-        studentRepository.save(student);
-        return new ResponseEntity<>(student, HttpStatus.CREATED);
+        Student createdStudent = studentService.createStudent(student);
+        return new ResponseEntity<>(createdStudent, HttpStatus.CREATED);
     }
 
     @GetMapping("/students/{id}")
     public ResponseEntity<Student> retrieveStudentById(@PathVariable(value = "id") Long id) {
+        Student foundStudent = studentService.getStudent(id);
+        Optional<Student> optionalStudent = Optional.ofNullable(foundStudent);
 
-        return studentRepository.findById(id)
+        return optionalStudent
                 .map(student -> new ResponseEntity<>(student, HttpStatus.OK))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/students/{id}")
     public ResponseEntity<?> updateStudentById(@PathVariable(value = "id") Long id, @RequestBody Student changedStudent) {
-
-        return studentRepository.findById(id)
-                .map(student -> {
-                    student.setName(changedStudent.getName());
-                    student.setSurname(changedStudent.getSurname());
-                    student.setEmail(changedStudent.getEmail());
-                    student.setAcademicYear(changedStudent.getAcademicYear());
-                    student.setCourseOfStudy(changedStudent.getCourseOfStudy());
-                    student.setIndexNumber(changedStudent.getIndexNumber());
-                    student.setPassword(changedStudent.getPassword());
-                    studentRepository.save(student);
-                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        boolean isUpdated = studentService.updateStudent(id, changedStudent);
+        if (isUpdated) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/students/{id}")
     public ResponseEntity<?> deleteStudentById(@PathVariable(value = "id") Long id) {
-
-        return studentRepository.findById(id)
-                .map(student -> {
-                    studentRepository.delete(student);
-                    return new ResponseEntity<>(HttpStatus.OK);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        boolean isDeleted = studentService.deleteStudent(id);
+        if (isDeleted) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/my-data")
@@ -76,12 +69,12 @@ public class StudentController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
 
-        Student loggedStudent = studentRepository.findStudentByEmail(email);
+        Student loggedStudent = studentService.getStudentByEmail(email);
         Optional<Student> response = Optional.ofNullable(loggedStudent);
 
         return response
                 .map(item -> new ResponseEntity<>(loggedStudent, HttpStatus.OK))
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/my-data")
@@ -89,33 +82,24 @@ public class StudentController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
 
-        Student loggedStudent = studentRepository.findStudentByEmail(email);
-        Optional<Student> response = Optional.ofNullable(loggedStudent);
+        boolean isUpdated = studentService.updateStudentByEmail(email, changedStudent);
 
-        return response
-                .map(student -> {
-                    student.setName(changedStudent.getName());
-                    student.setSurname(changedStudent.getSurname());
-                    student.setCourseOfStudy(changedStudent.getCourseOfStudy());
-                    student.setAcademicYear(changedStudent.getAcademicYear());
-                    student.setIndexNumber(changedStudent.getIndexNumber());
-                    student.setEmail(changedStudent.getEmail());
-                    studentRepository.save(student);
-                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        if (isUpdated) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/students/alter/password/{id}")
     public ResponseEntity<?> updateStudentsPasswordById(@PathVariable(value = "id") Long id, @RequestBody String newPassword) {
 
-        return studentRepository.findById(id)
-                .map(student -> {
-                    student.setPassword(newPassword);
-                    studentRepository.save(student);
-                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-                })
-                .orElse(ResponseEntity.notFound().build());
+        boolean isChanged = studentService.resetPassword(id, newPassword);
+        if (isChanged) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/alter/password")
@@ -123,15 +107,11 @@ public class StudentController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
 
-        Student loggedStudent = studentRepository.findStudentByEmail(email);
-        Optional<Student> response = Optional.ofNullable(loggedStudent);
-
-        return response
-                .map(student -> {
-                    loggedStudent.setPassword(newPassword);
-                    studentRepository.save(loggedStudent);
-                    return ResponseEntity.ok().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        boolean isUpdated = studentService.resetPasswordByEmail(email, newPassword);
+        if(isUpdated){
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.notFound().build();
+        }
     }
 }
