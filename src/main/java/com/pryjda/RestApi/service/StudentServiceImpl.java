@@ -2,9 +2,12 @@ package com.pryjda.RestApi.service;
 
 import com.pryjda.RestApi.entities.Student;
 import com.pryjda.RestApi.repository.StudentRepository;
+import com.pryjda.RestApi.shared.dto.StudentDTO;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,24 +17,37 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     private StudentRepository studentRepository;
 
+    private static final ModelMapper mapper = new ModelMapper();
+
     @Override
-    public List<Student> getStudents() {
-        return studentRepository.findAll();
+    public List<StudentDTO> getStudents() {
+        List<Student> students = studentRepository.findAll();
+        List<StudentDTO> studentsDTO = new ArrayList<>();
+        for (Student item : students) {
+            studentsDTO.add(mapper.map(item, StudentDTO.class));
+        }
+        return studentsDTO;
     }
 
     @Override
-    public Student getStudent(Long studentId) {
-        return studentRepository.findById(studentId)
-                .orElse(null);
+    public StudentDTO getStudent(Long studentId) {
+        Student student = studentRepository.findById(studentId).orElse(null);
+        StudentDTO studentDTO = mapper.map(student, StudentDTO.class);
+        return studentDTO;
     }
 
     @Override
-    public Student createStudent(Student student) {
-        return studentRepository.save(student);
+    public StudentDTO createStudent(StudentDTO studentDTO) {
+        Student student = mapper.map(studentDTO, Student.class);
+        Student createdStudent = studentRepository.save(student);
+        StudentDTO createdStudentDTO = mapper.map(createdStudent, StudentDTO.class);
+        return createdStudentDTO;
     }
 
     @Override
-    public boolean updateStudent(Long studentId, Student changedStudent) {
+    public boolean updateStudent(Long studentId, StudentDTO changedStudentDTO) {
+        Student changedStudent = mapper.map(changedStudentDTO, Student.class);
+
         return studentRepository.findById(studentId)
                 .map(student -> {
                     student.setName(changedStudent.getName());
@@ -59,14 +75,16 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student getStudentByEmail(String email) {
-        return studentRepository.findStudentByEmail(email);
+    public StudentDTO getStudentByEmail(String email) {
+        Student student = studentRepository.findStudentByEmail(email);
+        StudentDTO studentDTO = mapper.map(student, StudentDTO.class);
+        return studentDTO;
     }
 
     @Override
-    public boolean updateStudentByEmail(String email, Student changedStudent) {
-
+    public boolean updateStudentByEmail(String email, StudentDTO changedStudentDTO) {
         Student studentBeforeChanges = studentRepository.findStudentByEmail(email);
+        Student changedStudent = mapper.map(changedStudentDTO, Student.class);
         Optional<Student> optionalStudent = Optional.ofNullable(studentBeforeChanges);
 
         return optionalStudent

@@ -1,24 +1,24 @@
 package com.pryjda.RestApi.service;
 
-import com.pryjda.RestApi.entities.Student;
+import com.pryjda.RestApi.shared.dto.StudentDTO;
 
 import java.util.List;
 
 public interface StudentService {
 
-    List<Student> getStudents();
+    List<StudentDTO> getStudents();
 
-    Student getStudent(Long studentId);
+    StudentDTO getStudent(Long studentId);
 
-    Student createStudent(Student student);
+    StudentDTO createStudent(StudentDTO studentDTO);
 
-    boolean updateStudent(Long studentId, Student student);
+    boolean updateStudent(Long studentId, StudentDTO studentDTO);
 
     boolean deleteStudent(Long studentId);
 
-    Student getStudentByEmail(String email);
+    StudentDTO getStudentByEmail(String email);
 
-    boolean updateStudentByEmail(String email, Student student);
+    boolean updateStudentByEmail(String email, StudentDTO studentDTO);
 
     boolean resetPassword(Long studentId, String password);
 
