@@ -1,6 +1,7 @@
 package com.pryjda.RestApi.service;
 
 import com.pryjda.RestApi.entities.Student;
+import com.pryjda.RestApi.exceptions.StudentServiceException;
 import com.pryjda.RestApi.repository.StudentRepository;
 import com.pryjda.RestApi.shared.dto.StudentDTO;
 import org.modelmapper.ModelMapper;
@@ -31,7 +32,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDTO getStudent(Long studentId) {
-        Student student = studentRepository.findById(studentId).orElse(null);
+        Student student = studentRepository
+                .findById(studentId)
+                .orElseThrow(()->new StudentServiceException("wrong student id"));
         StudentDTO studentDTO = mapper.map(student, StudentDTO.class);
         return studentDTO;
     }
