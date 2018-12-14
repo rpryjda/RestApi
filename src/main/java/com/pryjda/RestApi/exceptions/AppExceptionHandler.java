@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-
 import java.time.LocalDateTime;
 
 @ControllerAdvice
@@ -17,7 +16,7 @@ public class AppExceptionHandler {
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setTime(LocalDateTime.now());
         errorMessage.setMessage(ex.getLocalizedMessage());
-        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
     }
 
 

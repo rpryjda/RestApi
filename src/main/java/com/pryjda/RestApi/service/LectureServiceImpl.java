@@ -1,8 +1,9 @@
 package com.pryjda.RestApi.service;
 
 import com.pryjda.RestApi.entities.Lecture;
+import com.pryjda.RestApi.model.request.LectureRequest;
+import com.pryjda.RestApi.model.response.LectureResponse;
 import com.pryjda.RestApi.repository.LectureRepository;
-import com.pryjda.RestApi.shared.dto.LectureDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,26 +20,26 @@ public class LectureServiceImpl implements LectureService {
     private static final ModelMapper mapper = new ModelMapper();
 
     @Override
-    public List<LectureDTO> getLectures() {
+    public List<LectureResponse> getLectures() {
         List<Lecture> lectures = lectureRepository.findAll();
-        List<LectureDTO> lecturesDTO = new ArrayList<>();
+        List<LectureResponse> lecturesResponse = new ArrayList<>();
         for (Lecture item : lectures) {
-            lecturesDTO.add(mapper.map(item, LectureDTO.class));
+            lecturesResponse.add(mapper.map(item, LectureResponse.class));
         }
-        return lecturesDTO;
+        return lecturesResponse;
     }
 
     @Override
-    public LectureDTO createLecture(LectureDTO lectureDTO) {
-        Lecture lecture = mapper.map(lectureDTO, Lecture.class);
+    public LectureResponse createLecture(LectureRequest lectureRequest) {
+        Lecture lecture = mapper.map(lectureRequest, Lecture.class);
         Lecture createdLecture = lectureRepository.save(lecture);
-        LectureDTO createdLectureDTO = mapper.map(createdLecture, LectureDTO.class);
-        return createdLectureDTO;
+        LectureResponse createdLectureResponse = mapper.map(createdLecture, LectureResponse.class);
+        return createdLectureResponse;
     }
 
     @Override
-    public boolean updateLecture(Long lectureId, LectureDTO updatedLectureDTO) {
-        Lecture updatedLecture = mapper.map(updatedLectureDTO, Lecture.class);
+    public boolean updateLecture(Long lectureId, LectureRequest updatedLectureRequest) {
+        Lecture updatedLecture = mapper.map(updatedLectureRequest, Lecture.class);
 
         return lectureRepository.findById(lectureId)
                 .map(lecture -> {

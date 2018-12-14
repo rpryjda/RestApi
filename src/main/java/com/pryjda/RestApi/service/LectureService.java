@@ -1,16 +1,17 @@
 package com.pryjda.RestApi.service;
 
-import com.pryjda.RestApi.shared.dto.LectureDTO;
+import com.pryjda.RestApi.model.request.LectureRequest;
+import com.pryjda.RestApi.model.response.LectureResponse;
 
 import java.util.List;
 
 public interface LectureService {
 
-    List<LectureDTO> getLectures();
+    List<LectureResponse> getLectures();
 
-    LectureDTO createLecture(LectureDTO lectureDTO);
+    LectureResponse createLecture(LectureRequest lectureRequest);
 
-    boolean updateLecture(Long lectureId, LectureDTO lectureDTO);
+    boolean updateLecture(Long lectureId, LectureRequest lectureRequest);
 
     boolean deleteLecture(Long lectureId);
 }

@@ -2,8 +2,8 @@ package com.pryjda.RestApi.service;
 
 import com.pryjda.RestApi.entities.Student;
 import com.pryjda.RestApi.exceptions.StudentServiceException;
+import com.pryjda.RestApi.model.response.StudentResponse;
 import com.pryjda.RestApi.repository.StudentRepository;
-import com.pryjda.RestApi.shared.dto.StudentDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -46,17 +46,17 @@ class StudentServiceImplTest {
         when(studentRepository.findById(anyLong())).thenReturn(Optional.of(student));
 
         //when
-        StudentDTO studentDTO = studentService.getStudent(444L);
+        StudentResponse studentResponse = studentService.getStudent(444L);
 
         //then
-        assertNotNull(studentDTO);
-        assertEquals("Robert", studentDTO.getName());
-        assertEquals("Kowalski", studentDTO.getSurname());
-        assertEquals("robert.mickiewicz@wp.pl", studentDTO.getEmail());
-        assertEquals("123456", studentDTO.getPassword());
-        assertEquals(100300, studentDTO.getIndexNumber());
-        assertEquals("Second", studentDTO.getAcademicYear());
-        assertEquals("Civil Engineering", studentDTO.getCourseOfStudy());
+        assertNotNull(studentResponse);
+        assertEquals("Robert", studentResponse.getName());
+        assertEquals("Kowalski", studentResponse.getSurname());
+        assertEquals("robert.mickiewicz@wp.pl", studentResponse.getEmail());
+        assertEquals("123456", studentResponse.getPassword());
+        assertEquals(100300, studentResponse.getIndexNumber());
+        assertEquals("Second", studentResponse.getAcademicYear());
+        assertEquals("Civil Engineering", studentResponse.getCourseOfStudy());
     }
 
     @Test

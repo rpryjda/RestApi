@@ -2,8 +2,9 @@ package com.pryjda.RestApi.service;
 
 import com.pryjda.RestApi.entities.Student;
 import com.pryjda.RestApi.exceptions.StudentServiceException;
+import com.pryjda.RestApi.model.request.StudentRequest;
+import com.pryjda.RestApi.model.response.StudentResponse;
 import com.pryjda.RestApi.repository.StudentRepository;
-import com.pryjda.RestApi.shared.dto.StudentDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,35 +22,35 @@ public class StudentServiceImpl implements StudentService {
     private static final ModelMapper mapper = new ModelMapper();
 
     @Override
-    public List<StudentDTO> getStudents() {
+    public List<StudentResponse> getStudents() {
         List<Student> students = studentRepository.findAll();
-        List<StudentDTO> studentsDTO = new ArrayList<>();
+        List<StudentResponse> studentsResponse = new ArrayList<>();
         for (Student item : students) {
-            studentsDTO.add(mapper.map(item, StudentDTO.class));
+            studentsResponse.add(mapper.map(item, StudentResponse.class));
         }
-        return studentsDTO;
+        return studentsResponse;
     }
 
     @Override
-    public StudentDTO getStudent(Long studentId) {
+    public StudentResponse getStudent(Long studentId) {
         Student student = studentRepository
                 .findById(studentId)
-                .orElseThrow(()->new StudentServiceException("wrong student id"));
-        StudentDTO studentDTO = mapper.map(student, StudentDTO.class);
-        return studentDTO;
+                .orElseThrow(() -> new StudentServiceException("wrong student id"));
+        StudentResponse studentResponse = mapper.map(student, StudentResponse.class);
+        return studentResponse;
     }
 
     @Override
-    public StudentDTO createStudent(StudentDTO studentDTO) {
-        Student student = mapper.map(studentDTO, Student.class);
+    public StudentResponse createStudent(StudentRequest studentRequest) {
+        Student student = mapper.map(studentRequest, Student.class);
         Student createdStudent = studentRepository.save(student);
-        StudentDTO createdStudentDTO = mapper.map(createdStudent, StudentDTO.class);
-        return createdStudentDTO;
+        StudentResponse createdStudentResponse = mapper.map(createdStudent, StudentResponse.class);
+        return createdStudentResponse;
     }
 
     @Override
-    public boolean updateStudent(Long studentId, StudentDTO changedStudentDTO) {
-        Student changedStudent = mapper.map(changedStudentDTO, Student.class);
+    public boolean updateStudent(Long studentId, StudentRequest changedStudentRequest) {
+        Student changedStudent = mapper.map(changedStudentRequest, Student.class);
 
         return studentRepository.findById(studentId)
                 .map(student -> {
@@ -78,16 +79,16 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDTO getStudentByEmail(String email) {
+    public StudentResponse getStudentByEmail(String email) {
         Student student = studentRepository.findStudentByEmail(email);
-        StudentDTO studentDTO = mapper.map(student, StudentDTO.class);
-        return studentDTO;
+        StudentResponse studentResponse = mapper.map(student, StudentResponse.class);
+        return studentResponse;
     }
 
     @Override
-    public boolean updateStudentByEmail(String email, StudentDTO changedStudentDTO) {
+    public boolean updateStudentByEmail(String email, StudentRequest changedStudentRequest) {
         Student studentBeforeChanges = studentRepository.findStudentByEmail(email);
-        Student changedStudent = mapper.map(changedStudentDTO, Student.class);
+        Student changedStudent = mapper.map(changedStudentRequest, Student.class);
         Optional<Student> optionalStudent = Optional.ofNullable(studentBeforeChanges);
 
         return optionalStudent
