@@ -1,3 +1,20 @@
+DROP TRIGGER IF EXISTS after_student_insert_first;
+DROP TRIGGER IF EXISTS after_student_insert_second;
+
+CREATE TRIGGER after_student_insert_first
+AFTER INSERT
+ON student
+FOR EACH ROW
+INSERT INTO users(username, password, enabled)
+VALUES (NEW.email, CONCAT('{noop}',NEW.password), true);
+
+CREATE TRIGGER after_student_insert_second
+AFTER INSERT
+ON student
+FOR EACH ROW
+INSERT INTO user_roles(username, role)
+VALUES (NEW.email, 'ROLE_USER');
+
 INSERT INTO student (name, surname, email, password, academic_year, course_of_study, index_number)
 VALUES
 ('Jan', 'Nowak', 'jan.nowak@gmail.com', '12345678', 'second', 'Civil Engineering', 102001),

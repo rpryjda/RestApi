@@ -11,13 +11,20 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class AppExceptionHandler {
 
-    @ExceptionHandler(value = {StudentServiceException.class, Exception.class})
-    public ResponseEntity<?> handleStudentServiceException(StudentServiceException ex) {
+    @ExceptionHandler(value = {Exception.class})
+    public ResponseEntity<?> handleExceptions(Exception ex) {
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setTime(LocalDateTime.now());
         errorMessage.setMessage(ex.getLocalizedMessage());
         return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = {StudentServiceException.class})
+    public ResponseEntity<?> handleStudentServiceException(StudentServiceException ex) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setTime(LocalDateTime.now());
+        errorMessage.setMessage(ex.getLocalizedMessage());
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+    }
 
 }

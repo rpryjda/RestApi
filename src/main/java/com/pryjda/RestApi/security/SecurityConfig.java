@@ -1,5 +1,6 @@
 package com.pryjda.RestApi.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -7,24 +8,21 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
+
+import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private DataSource dataSource;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        User.UserBuilder users = User.withDefaultPasswordEncoder();
-
-        auth.inMemoryAuthentication()
-                .withUser(users.username("User").password("user123").roles("USER"))
-                .withUser(users.username("jan.nowak@gmail.com").password("1").roles("USER"))
-                .withUser(users.username("adam.kowalski@gmail.com").password("2").roles("USER"))
-                .withUser(users.username("piotr.rybka@gmail.com").password("3").roles("USER"))
-                .withUser(users.username("marcel.chrobry@gmail.com").password("4").roles("USER"))
-                .withUser(users.username("robert.mak@gmail.com").password("5").roles("USER"))
-                .withUser(users.username("Admin").password("admin123").roles("USER", "ADMIN"));
+        auth.jdbcAuthentication().dataSource(dataSource)
+                .usersByUsernameQuery("SELECT username, password, enabled FROM users WHERE username = ?")
+                .authoritiesByUsernameQuery("SELECT username, role FROM user_roles WHERE username = ?");
     }
 
     @Override
