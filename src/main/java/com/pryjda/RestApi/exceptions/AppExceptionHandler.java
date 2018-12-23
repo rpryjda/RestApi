@@ -19,8 +19,24 @@ public class AppExceptionHandler {
         return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = {StudentServiceException.class})
-    public ResponseEntity<?> handleStudentServiceException(StudentServiceException ex) {
+    @ExceptionHandler(value = {WrongUserIdException.class})
+    public ResponseEntity<?> handleWrongUserIdException(WrongUserIdException ex) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setTime(LocalDateTime.now());
+        errorMessage.setMessage(ex.getLocalizedMessage());
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = {WrongUserEmailException.class})
+    public ResponseEntity<?> handleWrongUserEmailException(WrongUserEmailException ex) {
+        ErrorMessage errorMessage = new ErrorMessage();
+        errorMessage.setTime(LocalDateTime.now());
+        errorMessage.setMessage(ex.getLocalizedMessage());
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = {WrongUserIndexNumberException.class})
+    public ResponseEntity<?> handleWrongUserIndexNumberException(WrongUserIndexNumberException ex) {
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setTime(LocalDateTime.now());
         errorMessage.setMessage(ex.getLocalizedMessage());

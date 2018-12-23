@@ -10,15 +10,17 @@ import javax.persistence.*;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name = "user_roles")
-public class UserRoles {
+@Table(name = "user_profile")
+public class UserProfile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String role;
+    private String name;
+    private String surname;
+    private String academicYear;
+    private String courseOfStudy;
 
-    @ManyToOne
-    @JoinColumn(name = "username")
-    private Users user;
+    @OneToOne(mappedBy = "userProfile", cascade = CascadeType.ALL)
+    private User user;
 }

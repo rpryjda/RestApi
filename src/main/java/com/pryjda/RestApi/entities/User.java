@@ -11,22 +11,26 @@ import java.util.Set;
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name = "student")
-public class Student {
+@Table(name = "user")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
-    private String surname;
     private String email;
     private String password;
-    private String academicYear;
-    private String courseOfStudy;
     private int indexNumber;
+    private boolean enabled;
 
     @ManyToMany(mappedBy = "attendanceList")
     @JsonIgnore
     private Set<Lecture> lectures = new HashSet<>();
 
+    @ManyToMany(mappedBy = "users")
+    @JsonIgnore
+    private Set<Role> roles = new HashSet<>();
+
+    @OneToOne
+    @JoinColumn(name = "user_profile_id", unique = true)
+    private UserProfile userProfile;
 }

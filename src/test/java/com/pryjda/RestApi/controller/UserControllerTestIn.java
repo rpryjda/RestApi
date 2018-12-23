@@ -2,7 +2,7 @@ package com.pryjda.RestApi.controller;
 
 import com.google.gson.Gson;
 
-import com.pryjda.RestApi.model.request.StudentRequest;
+import com.pryjda.RestApi.model.request.UserRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,36 +24,36 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class StudentControllerTestIn {
+public class UserControllerTestIn {
 
     @Autowired
     private MockMvc mockMvc;
 
-    private StudentRequest studentRequest;
+    private UserRequest userRequest;
 
-    private String studentRequestJson;
+    private String userRequestJson;
 
     private Gson gson = new Gson();
 
     @BeforeEach
     public void setUp() {
-        studentRequest = new StudentRequest();
-        studentRequest.setName("Robert");
-        studentRequest.setSurname("Mickiewicz");
-        studentRequest.setEmail("robert.mickiewicz@wp.pl");
-        studentRequest.setPassword("999999");
-        studentRequest.setIndexNumber(100399);
-        studentRequest.setAcademicYear("Second");
-        studentRequest.setCourseOfStudy("Civil Engineering");
+        userRequest = new UserRequest();
+        userRequest.setName("Robert");
+        userRequest.setSurname("Mickiewicz");
+        userRequest.setEmail("robert.mickiewicz@wp.pl");
+        userRequest.setPassword("999999");
+        userRequest.setIndexNumber(100399);
+        userRequest.setAcademicYear("Second");
+        userRequest.setCourseOfStudy("Civil Engineering");
 
-        studentRequestJson = gson.toJson(studentRequest);
+        userRequestJson = gson.toJson(userRequest);
     }
 
     @Test
     @WithMockUser(username = "Admin", password = "admin123", roles = "ADMIN")
-    public void shouldReturnListOfStudentsInJsonAndStatus200OK() throws Exception {
+    public void shouldReturnListOfUsersInJsonAndStatus200OK() throws Exception {
         this.mockMvc
-                .perform(get("/students"))
+                .perform(get("/users"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers
@@ -63,11 +63,11 @@ public class StudentControllerTestIn {
 
     @Test
     @WithMockUser(username = "Admin", password = "admin123", roles = "ADMIN")
-    public void shouldCreateStudentAndReturnStudentRespondInJsonAndStatus201Created() throws Exception {
+    public void shouldCreateUserAndReturnUserRespondInJsonAndStatus201Created() throws Exception {
         this.mockMvc
-                .perform(post("/students")
+                .perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(studentRequestJson))
+                        .content(userRequestJson))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(MockMvcResultMatchers
@@ -77,24 +77,24 @@ public class StudentControllerTestIn {
 
     @Test
     @WithMockUser(username = "Admin", password = "admin123", roles = "ADMIN")
-    public void shouldUpdateStudentByIdAndReturnStatus204NoContent() throws Exception {
+    public void shouldUpdateUserByIdAndReturnStatus204NoContent() throws Exception {
         long id = 3;
         this.mockMvc
-                .perform(put("/students/" + id)
+                .perform(put("/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(studentRequestJson))
+                        .content(userRequestJson))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
 
     @Test
     @WithMockUser(username = "Admin", password = "admin123", roles = "ADMIN")
-    public void shouldReturnStatus404NotFoundWhenTryToUpdateStudentWithWrongId() throws Exception {
+    public void shouldReturnStatus404NotFoundWhenTryToUpdateUserWithWrongId() throws Exception {
         long id = 8;
         this.mockMvc
-                .perform(put("/students/" + id)
+                .perform(put("/users/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(studentRequestJson))
+                        .content(userRequestJson))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }

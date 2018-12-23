@@ -1,39 +1,53 @@
+INSERT INTO user_profile (name, surname, academic_year, course_of_study)
+VALUES ('Jan', 'NowakTest', 'second', 'Civil Engineering'),
+       ('Adam', 'KowalskiTest', 'third', 'Computer Science'),
+       ('Piotr', 'RybkaTest', 'first', 'Medicine'),
+       ('Marcel', 'ChrobryTest', 'second', 'Computer Science'),
+       ('Robert', 'MakTest', 'first', 'Chemistry');
 
-
-INSERT INTO student (name, surname, email, password, academic_year, course_of_study, index_number)
-VALUES
-('Jan', 'NowakTest', 'jan.nowak@gmail.com', '12345678', 'second', 'Civil Engineering', 102001),
-('Adam', 'KowalskiTest', 'adam.kowalski@gmail.com', '22345678', 'third', 'Computer Science', 102022),
-('Piotr', 'RybkaTest', 'piotr.rybka@gmail.com', '32345678', 'first', 'Medicine', 102033),
-('Marcel', 'ChrobryTest', 'marcel.chrobry@gmail.com', '42345678', 'second', 'Computer Science', 102000),
-('Robert', 'MakTest', 'robert.mak@gmail.com', '52345678', 'first', 'Chemistry', 102008);
-
+INSERT INTO user (email, password, index_number, enabled, user_profile_id)
+VALUES ('jan.nowak@gmail.com', '12345678', 102001, true, 1),
+       ('adam.kowalski@gmail.com', '22345678', 102022, true, 2),
+       ('piotr.rybka@gmail.com', '32345678', 102033, true, 3),
+       ('marcel.chrobry@gmail.com', '42345678', 102000, true, 4),
+       ('robert.mak@gmail.com', '52345678', 102008, true, 5);
 
 INSERT INTO lecture (title, description, lecturer)
 VALUES
-('JavaDevTest 1', 'JAVA programming - JAVA SE', 'James Smith'),
-('JavaDevTest 2', 'JAVA programming - JAVA JEE', 'James Smith'),
-('JavaDevTest 3', 'JAVA programming - GIT', 'Robert Johnson'),
-('JavaDevTest 4', 'JAVA programming - databases', 'Robert Johnson'),
-('JavaDevTest 5', 'JAVA programming - Spring', 'Robert Johnson'),
-('JavaDevTest 6', 'JAVA programming - REST API', 'David Garcia');
+       ('JavaDev 1', 'JAVA programming - JAVA SE', 'James Smith'),
+       ('JavaDev 2', 'JAVA programming - JAVA JEE', 'James Smith'),
+       ('JavaDev 3', 'JAVA programming - GIT', 'Robert Johnson'),
+       ('JavaDev 4', 'JAVA programming - databases', 'Robert Johnson'),
+       ('JavaDev 5', 'JAVA programming - Spring', 'Robert Johnson'),
+       ('JavaDev 6', 'JAVA programming - REST API', 'David Garcia');
 
-
-INSERT INTO student_lecture (student_id, lecture_id)
+INSERT INTO user_lecture (user_id, lecture_id)
 VALUES
-(2, 1),
-(3, 1),
-(4, 1),
-(5, 1),
-(1, 2),
-(2, 2),
-(3, 2),
-(1, 3),
-(2, 3),
-(3, 3),
-(4, 3),
-(5, 3),
-(2, 4),
-(1, 5),
-(2, 5),
-(3, 5);
+       (2, 1),
+       (3, 1),
+       (4, 1),
+       (5, 1),
+       (1, 2),
+       (2, 2),
+       (3, 2),
+       (1, 3),
+       (2, 3),
+       (3, 3),
+       (4, 3),
+       (5, 3),
+       (2, 4),
+       (1, 5),
+       (2, 5),
+       (3, 5);
+
+SET FOREIGN_KEY_CHECKS=0;
+
+INSERT INTO user_role (user_id, role_id)
+VALUES
+       (1, 2),
+       (2, 2),
+       (3, 2),
+       (4, 2),
+       (5, 2);
+
+SET FOREIGN_KEY_CHECKS=1;

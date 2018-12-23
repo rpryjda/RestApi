@@ -1,30 +1,32 @@
 package com.pryjda.RestApi.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @RequiredArgsConstructor
-@Table(name = "lecture")
-public class Lecture {
+@Table(name = "role")
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
-    private String description;
-    private String lecturer;
+    @Column(unique = true)
+    private String name;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
-            name = "user_lecture",
-            joinColumns = {@JoinColumn(name = "lecture_id", referencedColumnName = "id")},
+            name = "user_role",
+            joinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")})
     @JsonIgnore
-    private Set<User> attendanceList = new HashSet<>();
+    private Set<User> users = new HashSet<>();
 }

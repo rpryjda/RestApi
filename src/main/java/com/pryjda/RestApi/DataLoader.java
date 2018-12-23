@@ -1,9 +1,9 @@
 package com.pryjda.RestApi;
 
-import com.pryjda.RestApi.entities.UserRoles;
-import com.pryjda.RestApi.entities.Users;
-import com.pryjda.RestApi.repository.UserRolesRepository;
-import com.pryjda.RestApi.repository.UsersRepository;
+import com.pryjda.RestApi.entities.Role;
+import com.pryjda.RestApi.entities.User;
+import com.pryjda.RestApi.repository.RoleRepository;
+import com.pryjda.RestApi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -13,27 +13,31 @@ import org.springframework.stereotype.Component;
 public class DataLoader implements ApplicationRunner {
 
     @Autowired
-    private UsersRepository usersRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    private UserRolesRepository userRolesRepository;
+    private RoleRepository roleRepository;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        Users admin = new Users();
-        admin.setUsername("Admin");
-        admin.setPassword("{noop}admin123");
+
+        User admin = new User();
+        admin.setEmail("Admin");
+        admin.setPassword("admin123");
         admin.setEnabled(true);
-        usersRepository.save(admin);
+        userRepository.save(admin);
 
-        UserRoles adminRole = new UserRoles();
-        adminRole.setUser(admin);
-        adminRole.setRole("ROLE_ADMIN");
-        userRolesRepository.save(adminRole);
+        Role roleAdmin = new Role();
+        roleAdmin.setName("ROLE_ADMIN");
+        Role newRoleNo1 = roleRepository.save(roleAdmin);
 
-        UserRoles adminSecondRole = new UserRoles();
-        adminSecondRole.setUser(admin);
-        adminSecondRole.setRole("ROLE_USER");
-        userRolesRepository.save(adminSecondRole);
+        Role roleUser = new Role();
+        roleUser.setName("ROLE_USER");
+        Role newRoleNo2 = roleRepository.save(roleUser);
+
+        newRoleNo1.getUsers().add(admin);
+        newRoleNo2.getUsers().add(admin);
+        roleRepository.save(newRoleNo1);
+        roleRepository.save(newRoleNo2);
     }
 }

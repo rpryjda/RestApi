@@ -1,4 +1,4 @@
-package com.pryjda.RestApi.model.response;
+package com.pryjda.RestApi.model.request;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,8 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class StudentResponse {
-    private Long id;
+public class UserRequest {
     private String name;
     private String surname;
     private String email;

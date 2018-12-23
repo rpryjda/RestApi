@@ -2,5 +2,7 @@ package com.pryjda.RestApi.service;
 
 public interface AttendanceService {
 
-    boolean createRecordIntoAttendanceList(Long lectureID, String studentEmail);
+    boolean createRecordIntoAttendanceListByUserEmail(Long lectureID, String userEmail);
+
+    boolean createRecordIntoAttendanceListByUserIndexNumber(Long lectureID, int indexNumber);
 }

@@ -1,6 +1,7 @@
 package com.pryjda.RestApi.controller;
 
 import com.pryjda.RestApi.service.AttendanceService;
+import com.pryjda.RestApi.utils.Helpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +16,19 @@ public class AttendanceController {
     private AttendanceService attendanceService;
 
     @PostMapping("/registry/lectures/{id_lecture}")
-    public ResponseEntity<?> assignLoggedStudentToAttendanceList(@PathVariable(value = "id_lecture") Long idLecture) {
+    public ResponseEntity<?> assignLoggedUserToAttendanceList(@PathVariable(value = "id_lecture") Long idLecture) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
+        String authName = auth.getName();
 
-        boolean isStudentAddedToAttendanceList = attendanceService.createRecordIntoAttendanceList(idLecture, email);
-
-        if (isStudentAddedToAttendanceList) {
+        boolean isUserAddedToAttendanceListByUsingEmail = attendanceService
+                .createRecordIntoAttendanceListByUserEmail(idLecture, authName);
+        boolean isUserAddedToAttendanceListByUsingIndexNumber = false;
+        if (Helpers.isNumber(authName)) {
+            isUserAddedToAttendanceListByUsingIndexNumber = attendanceService
+                    .createRecordIntoAttendanceListByUserIndexNumber(idLecture, Integer.parseInt(authName));
+        }
+        if (isUserAddedToAttendanceListByUsingEmail || isUserAddedToAttendanceListByUsingIndexNumber) {
             return new ResponseEntity<>(HttpStatus.CREATED);
         } else {
             return ResponseEntity.notFound().build();

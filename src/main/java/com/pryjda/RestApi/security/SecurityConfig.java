@@ -21,19 +21,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication().dataSource(dataSource)
-                .usersByUsernameQuery("SELECT username, password, enabled FROM users WHERE username = ?")
-                .authoritiesByUsernameQuery("SELECT username, role FROM user_roles WHERE username = ?");
+                .usersByUsernameQuery("SELECT email, CONCAT('{noop}', password), enabled FROM user WHERE email = ?")
+                .authoritiesByUsernameQuery("SELECT u.email, r.name FROM role AS r, user AS u, user_role AS ur " +
+                        "WHERE u.id = ur.user_id AND r.id = ur.role_id AND u.email = ?");
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/students").hasRole("ADMIN")
-                .antMatchers(HttpMethod.POST, "/students").hasRole("ADMIN")
-                .antMatchers(HttpMethod.GET, "/students/*").hasRole("ADMIN")
-                .antMatchers(HttpMethod.PUT, "/students/*").hasRole("ADMIN")
-                .antMatchers(HttpMethod.DELETE, "/students/*").hasRole("ADMIN")
-                .antMatchers(HttpMethod.PUT, "/students/alter/password/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/users/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/users/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/users/*").hasRole("ADMIN")
+                .antMatchers(HttpMethod.PUT, "/users/password/*").hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, "/lectures").hasRole("ADMIN")
                 .antMatchers(HttpMethod.POST, "/lectures").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PUT, "/lectures/*").hasRole("ADMIN")
@@ -41,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/registry/lectures/*").hasRole("USER")
                 .antMatchers(HttpMethod.GET, "/my-data").hasRole("USER")
                 .antMatchers(HttpMethod.PUT, "/my-data").hasRole("USER")
-                .antMatchers(HttpMethod.PUT, "/alter/password").hasRole("USER")
+                .antMatchers(HttpMethod.PUT, "/password").hasRole("USER")
                 .and()
                 .httpBasic()
                 .and()
