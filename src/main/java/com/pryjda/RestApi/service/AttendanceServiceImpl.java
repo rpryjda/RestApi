@@ -1,7 +1,11 @@
 package com.pryjda.RestApi.service;
 
+import com.pryjda.RestApi.exceptions.WrongLectureIdException;
+import com.pryjda.RestApi.exceptions.WrongUserIdException;
+import com.pryjda.RestApi.model.response.UserResponse;
 import com.pryjda.RestApi.repository.LectureRepository;
 import com.pryjda.RestApi.repository.UserRepository;
+import com.pryjda.RestApi.utils.UserResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,28 +19,15 @@ public class AttendanceServiceImpl implements AttendanceService {
     LectureRepository lectureRepository;
 
     @Override
-    public boolean createRecordIntoAttendanceListByUserEmail(Long lectureID, String userEmail) {
-        return lectureRepository.findById(lectureID)
-                .map(lecture -> userRepository.findUserByEmail(userEmail)
-                            .map(user -> {
-                                lecture.getAttendanceList().add(user);
-                                lectureRepository.save(lecture);
-                                return true;
-                            })
-                            .orElse(false))
-                .orElse(false);
-    }
-
-    @Override
-    public boolean createRecordIntoAttendanceListByUserIndexNumber(Long lectureID, int indexNumber) {
-        return lectureRepository.findById(lectureID)
-                .map(lecture -> userRepository.findUserByIndexNumber(indexNumber)
+    public UserResponse createRecordIntoAttendanceListByUserId(Long lectureId, Long userId) {
+        return lectureRepository.findById(lectureId)
+                .map(lecture -> userRepository.findById(userId)
                         .map(user -> {
                             lecture.getAttendanceList().add(user);
                             lectureRepository.save(lecture);
-                            return true;
+                            return UserResponseBuilder.getUserResponseFromUserAndUserProfile(user, user.getUserProfile());
                         })
-                        .orElse(false))
-                .orElse(false);
+                        .orElseThrow(() -> new WrongUserIdException("number: " + userId + " is wrong user id")))
+                .orElseThrow(() -> new WrongLectureIdException("number: " + lectureId + " is wrong lecture id"));
     }
 }

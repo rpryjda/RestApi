@@ -99,7 +99,7 @@ class UserServiceImplTest {
     @Test
     void shouldThrowWrongUserIdExceptionWhenCallingWrongId() {
         //given
-        when(userRepository.findById(13L)).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
 
         //when
 
@@ -135,7 +135,7 @@ class UserServiceImplTest {
     @Test
     void shouldGetUserByIndexNumber() {
         //given
-        when(userRepository.findUserByIndexNumber(13)).thenReturn(Optional.of(user));
+        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.of(user));
 
         //when
         UserResponse userResponse = userService.getUserByIndexNumber(13);
@@ -202,7 +202,7 @@ class UserServiceImplTest {
     @Test
     void shouldUpdateUserByEmailAndReturnTrueIfExistsUserWithIndicatedEmail() {
         //given
-        when(userRepository.findUserByEmail("robert.mickiewicz@wp.pl")).thenReturn(Optional.of(user));
+        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(userProfileRepository.findById(anyLong())).thenReturn(Optional.of(userProfile));
 
         //when
@@ -227,7 +227,7 @@ class UserServiceImplTest {
     @Test
     void shouldUpdateUserByIndexNumberAndReturnTrueIfExistsUserWithIndicatedIndexNumber() {
         //given
-        when(userRepository.findUserByIndexNumber(13)).thenReturn(Optional.of(user));
+        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.of(user));
         when(userProfileRepository.findById(anyLong())).thenReturn(Optional.of(userProfile));
 
         //when
@@ -276,7 +276,7 @@ class UserServiceImplTest {
     @Test
     void shouldResetPasswordForUserAndReturnTrueWhenUserWithIndicatedIdExists() {
         //given
-        when(userRepository.findById(13L)).thenReturn(Optional.of(user));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         //when
         boolean result = userService.resetPassword(13L, "new password");
@@ -302,7 +302,7 @@ class UserServiceImplTest {
     @Test
     void shouldResetPasswordForUserAndReturnTrueWhenUserWithIndicatedEmailExists() {
         //given
-        when(userRepository.findUserByEmail("robert.mickiewicz@wp.pl")).thenReturn(Optional.of(user));
+        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
 
         //when
         boolean result = userService.resetPasswordByEmail("robert.mickiewicz@wp.pl", "new password");
@@ -328,7 +328,7 @@ class UserServiceImplTest {
     @Test
     void shouldResetPasswordForUserAndReturnTrueWhenUserWithIndicatedIndexNumberExists() {
         //given
-        when(userRepository.findUserByIndexNumber(13)).thenReturn(Optional.of(user));
+        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.of(user));
 
         //when
         boolean result = userService.resetPasswordByIndexNumber(13, "new password");

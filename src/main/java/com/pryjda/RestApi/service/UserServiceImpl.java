@@ -9,6 +9,7 @@ import com.pryjda.RestApi.model.request.UserRequest;
 import com.pryjda.RestApi.model.response.UserResponse;
 import com.pryjda.RestApi.repository.UserProfileRepository;
 import com.pryjda.RestApi.repository.UserRepository;
+import com.pryjda.RestApi.utils.UserResponseBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.findAll();
         List<UserResponse> usersResponse = new ArrayList<>();
         for (User item : users) {
-            usersResponse.add(getUserResponseFromUserAndUserProfile(item, item.getUserProfile()));
+            usersResponse.add(UserResponseBuilder.getUserResponseFromUserAndUserProfile(item, item.getUserProfile()));
         }
         return usersResponse;
     }
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository
                 .findById(userId)
                 .orElseThrow(() -> new WrongUserIdException("number: " + userId + " is wrong user id"));
-        return getUserResponseFromUserAndUserProfile(user, user.getUserProfile());
+        return UserResponseBuilder.getUserResponseFromUserAndUserProfile(user, user.getUserProfile());
     }
 
     @Override
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findUserByEmail(email)
                 .orElseThrow(() -> new WrongUserEmailException("User with e-mail: " + email + " doesn't exist"));
 
-        return getUserResponseFromUserAndUserProfile(user, user.getUserProfile());
+        return UserResponseBuilder.getUserResponseFromUserAndUserProfile(user, user.getUserProfile());
     }
 
     @Override
@@ -58,7 +59,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findUserByIndexNumber(indexNumber)
                 .orElseThrow(() -> new WrongUserIndexNumberException("User with index: " + indexNumber + " doesn't exist"));
 
-        return getUserResponseFromUserAndUserProfile(user, user.getUserProfile());
+        return UserResponseBuilder.getUserResponseFromUserAndUserProfile(user, user.getUserProfile());
     }
 
     @Override
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService {
         userProfileRepository.save(userProfile);
         User createdUser = userRepository.save(user);
 
-        return getUserResponseFromUserAndUserProfile(createdUser, createdUser.getUserProfile());
+        return UserResponseBuilder.getUserResponseFromUserAndUserProfile(createdUser, createdUser.getUserProfile());
     }
 
     @Override
@@ -181,22 +182,5 @@ public class UserServiceImpl implements UserService {
                     return true;
                 })
                 .orElse(false);
-    }
-
-    private UserResponse getUserResponseFromUserAndUserProfile(User user, UserProfile userProfile) {
-        UserResponse userResponse = new UserResponse();
-        if (userProfile != null) {
-            userResponse.setName(userProfile.getName());
-            userResponse.setSurname(userProfile.getSurname());
-            userResponse.setAcademicYear(userProfile.getAcademicYear());
-            userResponse.setCourseOfStudy(userProfile.getCourseOfStudy());
-        }
-        if (user != null) {
-            userResponse.setId(user.getId());
-            userResponse.setEmail(user.getEmail());
-            userResponse.setIndexNumber(user.getIndexNumber());
-            userResponse.setPassword(user.getPassword());
-        }
-        return userResponse;
     }
 }

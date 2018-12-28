@@ -14,12 +14,12 @@ VALUES ('jan.nowak@gmail.com', '12345678', 102001, true, 1),
 
 INSERT INTO lecture (title, description, lecturer)
 VALUES
-       ('JavaDev 1', 'JAVA programming - JAVA SE', 'James Smith'),
-       ('JavaDev 2', 'JAVA programming - JAVA JEE', 'James Smith'),
-       ('JavaDev 3', 'JAVA programming - GIT', 'Robert Johnson'),
-       ('JavaDev 4', 'JAVA programming - databases', 'Robert Johnson'),
-       ('JavaDev 5', 'JAVA programming - Spring', 'Robert Johnson'),
-       ('JavaDev 6', 'JAVA programming - REST API', 'David Garcia');
+       ('JavaDev 1 TEST', 'JAVA programming - JAVA SE', 'James Smith'),
+       ('JavaDev 2 TEST', 'JAVA programming - JAVA JEE', 'James Smith'),
+       ('JavaDev 3 TEST', 'JAVA programming - GIT', 'Robert Johnson'),
+       ('JavaDev 4 TEST', 'JAVA programming - databases', 'Robert Johnson'),
+       ('JavaDev 5 TEST', 'JAVA programming - Spring', 'Robert Johnson'),
+       ('JavaDev 6 TEST', 'JAVA programming - REST API', 'David Garcia');
 
 INSERT INTO user_lecture (user_id, lecture_id)
 VALUES

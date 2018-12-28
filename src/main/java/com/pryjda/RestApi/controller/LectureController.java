@@ -4,10 +4,13 @@ import com.pryjda.RestApi.model.request.LectureRequest;
 import com.pryjda.RestApi.model.response.LectureResponse;
 import com.pryjda.RestApi.service.LectureService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -27,10 +30,23 @@ public class LectureController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/lectures/{id}")
+    public ResponseEntity<LectureResponse> getLecture(@PathVariable(value = "id") Long id) {
+        LectureResponse lectureResponse = lectureService.getLectureById(id);
+        return new ResponseEntity<>(lectureResponse, HttpStatus.OK);
+    }
+
     @PostMapping("/lectures")
     public ResponseEntity<LectureResponse> createLecture(@RequestBody LectureRequest lectureRequest) {
         LectureResponse createdLectureResponse = lectureService.createLecture(lectureRequest);
-        return new ResponseEntity<>(createdLectureResponse, HttpStatus.CREATED);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createdLectureResponse.getId())
+                .toUri();
+        HttpHeaders locationHeader = new HttpHeaders();
+        locationHeader.setLocation(location);
+        return new ResponseEntity<>(createdLectureResponse, locationHeader, HttpStatus.CREATED);
     }
 
     @PutMapping("/lectures/{id}")

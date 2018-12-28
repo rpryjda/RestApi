@@ -31,22 +31,18 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/users/{id}")
+    public ResponseEntity<UserResponse> retrieveUserById(@PathVariable(value = "id") Long id) {
+        UserResponse foundUserResponse = userService.getUser(id);
+
+        return new ResponseEntity<>(foundUserResponse, HttpStatus.OK);
+    }
+
     @PostMapping("/users")
     public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest userRequest) {
         UserResponse createdUserResponse = userService.createUser(userRequest);
 
         return new ResponseEntity<>(createdUserResponse, HttpStatus.CREATED);
-    }
-
-    @GetMapping("/users/{id}")
-    public ResponseEntity<UserResponse> retrieveUserById(@PathVariable(value = "id") Long id) {
-        UserResponse foundUserResponse = userService.getUser(id);
-        Optional<UserResponse> optionalUser = Optional.ofNullable(foundUserResponse);
-
-
-        return optionalUser
-                .map(user -> new ResponseEntity<>(foundUserResponse, HttpStatus.OK))
-                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/users/{id}")
@@ -74,9 +70,14 @@ public class UserController {
     @GetMapping("/my-data")
     public ResponseEntity<UserResponse> retrieveLoggedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
+        String authName = auth.getName();
 
-        UserResponse loggedUserResponse = userService.getUserByEmail(email);
+        UserResponse loggedUserResponse;
+        if (Helpers.isNumber(authName)) {
+            loggedUserResponse = userService.getUserByIndexNumber(Integer.parseInt(authName));
+        } else {
+            loggedUserResponse = userService.getUserByEmail(authName);
+        }
         Optional<UserResponse> response = Optional.ofNullable(loggedUserResponse);
 
         return response
@@ -87,9 +88,15 @@ public class UserController {
     @PutMapping("/my-data")
     public ResponseEntity<?> updateLoggedUser(@RequestBody UserRequest userRequest) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String email = auth.getName();
+        String authName = auth.getName();
 
-        boolean isUpdated = userService.updateUserByEmail(email, userRequest);
+        boolean isUpdated;
+        if (Helpers.isNumber(authName)) {
+            isUpdated = userService.updateUserByIndexNumber(Integer.parseInt(authName), userRequest);
+        } else {
+            isUpdated = userService.updateUserByEmail(authName, userRequest);
+        }
+
         if (isUpdated) {
             return ResponseEntity.noContent().build();
         } else {
@@ -113,13 +120,14 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String authName = auth.getName();
 
-        boolean isUpdatedByIndexNumber = false;
-        boolean isUpdatedByEmail = userService.resetPasswordByEmail(authName, newPassword);
+        boolean isUpdated = false;
         if (Helpers.isNumber(authName)) {
-            isUpdatedByIndexNumber = userService.resetPasswordByIndexNumber(Integer.parseInt(authName), newPassword);
+            isUpdated = userService.resetPasswordByIndexNumber(Integer.parseInt(authName), newPassword);
+        } else {
+            isUpdated = userService.resetPasswordByEmail(authName, newPassword);
         }
 
-        if (isUpdatedByEmail || isUpdatedByIndexNumber) {
+        if (isUpdated) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
