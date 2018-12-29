@@ -1,13 +1,16 @@
 package com.pryjda.RestApi.service;
 
 import com.pryjda.RestApi.model.response.UserResponse;
-import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface AttendanceService {
 
-    @PostAuthorize("hasRole('ROLE_ADMIN') or " +
-            "(hasRole('ROLE_USER') and " +
-            "(authentication.getName().equals(returnObject.getEmail())) or " +
-            "(authentication.getName().equals(returnObject.getIndexNumber())))")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     UserResponse createRecordIntoAttendanceListByUserId(Long lectureId, Long userId);
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    boolean createRecordIntoAttendanceListByUserEmail(Long lectureID, String userEmail);
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    boolean createRecordIntoAttendanceListByUserIndexNumber(Long lectureID, int indexNumber);
 }

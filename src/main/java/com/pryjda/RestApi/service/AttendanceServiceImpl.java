@@ -30,4 +30,30 @@ public class AttendanceServiceImpl implements AttendanceService {
                         .orElseThrow(() -> new WrongUserIdException("number: " + userId + " is wrong user id")))
                 .orElseThrow(() -> new WrongLectureIdException("number: " + lectureId + " is wrong lecture id"));
     }
+
+    @Override
+    public boolean createRecordIntoAttendanceListByUserEmail(Long lectureId, String userEmail) {
+        return lectureRepository.findById(lectureId)
+                .map(lecture -> userRepository.findUserByEmail(userEmail)
+                        .map(user -> {
+                            lecture.getAttendanceList().add(user);
+                            lectureRepository.save(lecture);
+                            return true;
+                        })
+                        .orElse(false))
+                .orElseThrow(() -> new WrongLectureIdException("number: " + lectureId + " is wrong lecture id"));
+    }
+
+    @Override
+    public boolean createRecordIntoAttendanceListByUserIndexNumber(Long lectureId, int indexNumber) {
+        return lectureRepository.findById(lectureId)
+                .map(lecture -> userRepository.findUserByIndexNumber(indexNumber)
+                        .map(user -> {
+                            lecture.getAttendanceList().add(user);
+                            lectureRepository.save(lecture);
+                            return true;
+                        })
+                        .orElse(false))
+                .orElseThrow(() -> new WrongLectureIdException("number: " + lectureId + " is wrong lecture id"));
+    }
 }

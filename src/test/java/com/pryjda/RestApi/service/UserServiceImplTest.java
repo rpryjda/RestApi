@@ -91,7 +91,7 @@ class UserServiceImplTest {
         assertEquals("Mickiewicz", userResponse.getSurname());
         assertEquals("robert.mickiewicz@wp.pl", userResponse.getEmail());
         assertEquals("123456", userResponse.getPassword());
-        assertEquals(100300, userResponse.getIndexNumber());
+        assertEquals(Integer.valueOf(100300), userResponse.getIndexNumber());
         assertEquals("Second", userResponse.getAcademicYear());
         assertEquals("Civil Engineering", userResponse.getCourseOfStudy());
     }
@@ -169,7 +169,7 @@ class UserServiceImplTest {
         assertEquals("Mickiewicz", createdUser.getSurname());
         assertEquals("robert.mickiewicz@wp.pl", createdUser.getEmail());
         assertEquals("123456", createdUser.getPassword());
-        assertEquals(100300, createdUser.getIndexNumber());
+        assertEquals(Integer.valueOf(100300), createdUser.getIndexNumber());
         assertEquals("Second", createdUser.getAcademicYear());
         assertEquals("Civil Engineering", createdUser.getCourseOfStudy());
     }

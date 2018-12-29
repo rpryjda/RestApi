@@ -17,7 +17,9 @@ import org.mockito.MockitoAnnotations;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 class AttendanceServiceImplTest {
@@ -76,7 +78,7 @@ class AttendanceServiceImplTest {
         assertEquals("Mickiewicz", userResponse.getSurname());
         assertEquals("robert.mickiewicz@wp.pl", userResponse.getEmail());
         assertEquals("123456", userResponse.getPassword());
-        assertEquals(100300, userResponse.getIndexNumber());
+        assertEquals(Integer.valueOf(100300), userResponse.getIndexNumber());
         assertEquals("Second", userResponse.getAcademicYear());
         assertEquals("Civil Engineering", userResponse.getCourseOfStudy());
     }
@@ -105,5 +107,87 @@ class AttendanceServiceImplTest {
         //then
         assertThrows(WrongLectureIdException.class, () -> attendanceService
                 .createRecordIntoAttendanceListByUserId(13L, 13L));
+    }
+
+    @Test
+    void shouldCreateRecordIntoAttendanceListByUserEmailAndReturnTrueWhenUserAndLectureExist() {
+        //given
+        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+
+        //when
+        boolean result = attendanceService
+                .createRecordIntoAttendanceListByUserEmail(13L, "any correct e-mail");
+
+        //then
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldNotCreateRecordIntoAttendanceListByUserEmailAndReturnFalseWhenUserNotExists() {
+        //given
+        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.ofNullable(null));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+
+        //when
+        boolean result = attendanceService.createRecordIntoAttendanceListByUserEmail(13L, "wrong e-mail");
+
+        //then
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldNotCreateRecordIntoAttendanceListByUserEmailAndThrowWrongLectureIdExceptionWhenCallingWrongLectureId() {
+        //given
+        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+
+        //when
+
+        //then
+        assertThrows(WrongLectureIdException.class, () -> attendanceService
+                .createRecordIntoAttendanceListByUserEmail(13L, "any correct e-mail"));
+    }
+
+
+    @Test
+    void shouldCreateRecordIntoAttendanceListByUserIndexNumberAndReturnTrueWhenUserAndLectureExist() {
+        //given
+        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.of(user));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+
+        //when
+        boolean result = attendanceService
+                .createRecordIntoAttendanceListByUserIndexNumber(13L, 999);
+
+        //then
+        assertTrue(result);
+    }
+
+    @Test
+    void shouldNotCreateRecordIntoAttendanceListByUserIndexNumberAndReturnFalseWhenUserNotExists() {
+        //given
+        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.ofNullable(null));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+
+        //when
+        boolean result = attendanceService
+                .createRecordIntoAttendanceListByUserIndexNumber(13L, 999);
+
+        //then
+        assertFalse(result);
+    }
+
+    @Test
+    void shouldNotCreateRecordIntoAttendanceListByUserIndexNumberAndThrowWrongLectureIdExceptionWhenCallingWrongLectureId() {
+        //given
+        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.of(user));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+
+        //when
+
+        //then
+        assertThrows(WrongLectureIdException.class, () -> attendanceService
+                .createRecordIntoAttendanceListByUserIndexNumber(13L, 999));
     }
 }

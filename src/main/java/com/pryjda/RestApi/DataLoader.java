@@ -23,6 +23,7 @@ public class DataLoader implements ApplicationRunner {
 
         User admin = new User();
         admin.setEmail("Admin");
+        admin.setIndexNumber(777);
         admin.setPassword("admin123");
         admin.setEnabled(true);
         userRepository.save(admin);

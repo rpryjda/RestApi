@@ -1,5 +1,6 @@
 package com.pryjda.RestApi.security;
 
+import com.pryjda.RestApi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -8,21 +9,16 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
-import javax.sql.DataSource;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private DataSource dataSource;
+    private UserRepository userRepository;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.jdbcAuthentication().dataSource(dataSource)
-                .usersByUsernameQuery("SELECT email, CONCAT('{noop}', password), enabled FROM user WHERE email = ?")
-                .authoritiesByUsernameQuery("SELECT u.email, r.name FROM role AS r, user AS u, user_role AS ur " +
-                        "WHERE u.id = ur.user_id AND r.id = ur.role_id AND u.email = ?");
+        auth.userDetailsService(new AuthenticationUserService(userRepository));
     }
 
     @Override

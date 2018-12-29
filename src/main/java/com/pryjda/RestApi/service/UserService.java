@@ -13,13 +13,13 @@ public interface UserService {
     @PostFilter("hasRole('ROLE_ADMIN') or " +
             "(hasRole('ROLE_USER') and " +
             "(authentication.getName().equals(filterObject.getEmail())) or " +
-            "(authentication.getName().equals(filterObject.getIndexNumber())))")
+            "(authentication.getName().equals(filterObject.indexNumber.toString())))")
     List<UserResponse> getUsers();
 
     @PostAuthorize("hasRole('ROLE_ADMIN') or " +
             "(hasRole('ROLE_USER') and " +
             "(authentication.getName().equals(returnObject.getEmail())) or " +
-            "(authentication.getName().equals(returnObject.getIndexNumber())))")
+            "(authentication.getName().equals(returnObject.indexNumber.toString())))")
     UserResponse getUser(Long userId);
 
     @PreAuthorize("hasRole('ROLE_USER')")

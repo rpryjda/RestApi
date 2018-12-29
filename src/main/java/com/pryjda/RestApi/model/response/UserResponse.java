@@ -15,5 +15,5 @@ public class UserResponse {
     private String password;
     private String academicYear;
     private String courseOfStudy;
-    private int indexNumber;
+    private Integer indexNumber;
 }

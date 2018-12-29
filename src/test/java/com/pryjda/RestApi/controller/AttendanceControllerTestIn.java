@@ -21,7 +21,7 @@ class AttendanceControllerTestIn {
     private MockMvc mockMvc;
 
     @Test
-    @WithMockUser(username = "Admin", roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     void shouldAssignUserToAttendanceListAndReturnStatus201Created() throws Exception {
         mockMvc
                 .perform(post("/registry/lectures/{id_lecture}/users/{id_user}","1","1"))
@@ -30,7 +30,7 @@ class AttendanceControllerTestIn {
     }
 
     @Test
-    @WithMockUser(username = "Admin", roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     void shouldNotAssignUserToAttendanceListAndReturnStatus404NotFoundWhenIsWrongUserId() throws Exception {
         mockMvc
                 .perform(post("/registry/lectures/{id_lecture}/users/{id_user}","1","7"))
@@ -39,7 +39,7 @@ class AttendanceControllerTestIn {
     }
 
     @Test
-    @WithMockUser(username = "Admin", roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     void shouldNotAssignUserToAttendanceListAndReturnStatus404NotFoundWhenIsWrongLectureId() throws Exception {
         mockMvc
                 .perform(post("/registry/lectures/{id_lecture}/users/{id_user}","7","1"))
@@ -48,37 +48,55 @@ class AttendanceControllerTestIn {
     }
 
     @Test
-    @WithMockUser(username = "piotr.rybka@gmail.com", roles = "USER")
-    void shouldAssignLoggedUserToAttendanceListAndReturnStatus201CreatedWhenUserIsAuthenticatedAndAuthorized() throws Exception {
+    @WithMockUser(roles = "USER")
+    void shouldNotAssignUserToAttendanceListAndReturnStatus403ForbiddenWhenUserIsNotAuthorized() throws Exception {
         mockMvc
                 .perform(post("/registry/lectures/{id_lecture}/users/{id_user}","6","3"))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "piotr.rybka@gmail.com", roles = "USER")
+    void shouldAssignLoggedByEmailUserToAttendanceListAndReturnStatus201Created() throws Exception {
+        mockMvc
+                .perform(post("/registry/lectures/{id}","3"))
+                .andDo(print())
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithMockUser(username = "102033", roles = "USER")
+    void shouldAssignLoggedByIndexNumberUserToAttendanceListAndReturnStatus201Created() throws Exception {
+        mockMvc
+                .perform(post("/registry/lectures/{id}","3"))
                 .andDo(print())
                 .andExpect(status().isCreated());
     }
 
     @Test
     @WithMockUser(username = "piotr.rybka@gmail.com", roles = "OTHER")
-    void shouldNotAssignLoggedUserToAttendanceListAndReturnStatus403ForbiddenWhenUserIsAuthenticatedAndNotAuthorized() throws Exception {
+    void shouldReturnStatus403ForbiddenWhenTryToAssignLoggedUserToAttendanceListButUserIsNotAuthorized() throws Exception {
         mockMvc
-                .perform(post("/registry/lectures/{id_lecture}/users/{id_user}","6","3"))
+                .perform(post("/registry/lectures/{id}","3"))
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    @WithMockUser(username = "piotr.rybka@gmail.com", roles = "USER")
-    void shouldNotAssignLoggedUserToAttendanceListAndReturnStatus403ForbiddenWhenWrongUserIdIsIndicated() throws Exception {
+    @WithMockUser(username = "wrongEmail@gmail.com", roles = "USER")
+    void shouldReturnStatus404NotFoundWhenTryToAssignNotLoggedUserToAttendanceList() throws Exception {
         mockMvc
-                .perform(post("/registry/lectures/{id_lecture}/users/{id_user}","6","2"))
+                .perform(post("/registry/lectures/{id}","3"))
                 .andDo(print())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    @WithMockUser(username = "piotr.rybka@gmail.com", roles = "USER")
-    void shouldNotAssignLoggedUserToAttendanceListAndReturnStatus404NotFoundWhenWrongLectureIdIsIndicated() throws Exception {
+    @WithMockUser(username = "marcel.chrobry@gmail.com", roles = "USER")
+    void shouldReturnStatus404NotFoundWhenTryToAssignLoggedUserToAttendanceListAndIndicatedLectureNotExists() throws Exception {
         mockMvc
-                .perform(post("/registry/lectures/{id_lecture}/users/{id_user}","7","3"))
+                .perform(post("/registry/lectures/{id}","9"))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
