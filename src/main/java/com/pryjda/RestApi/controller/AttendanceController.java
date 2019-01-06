@@ -1,13 +1,13 @@
 package com.pryjda.RestApi.controller;
 
+import com.pryjda.RestApi.model.response.UserResponse;
 import com.pryjda.RestApi.service.AttendanceService;
-import com.pryjda.RestApi.utils.Helpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 @RestController
 public class AttendanceController {
@@ -23,24 +23,9 @@ public class AttendanceController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PostMapping("/registry/lectures/{id_lecture}")
-    public ResponseEntity<?> assignLoggedUserToAttendanceList(@PathVariable(value = "id_lecture") Long idLecture) {
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String authName = auth.getName();
-
-        boolean isUserAddedToAttendanceList;
-        if (Helpers.isNumber(authName)) {
-            isUserAddedToAttendanceList = attendanceService
-                    .createRecordIntoAttendanceListByUserIndexNumber(idLecture, Integer.parseInt(authName));
-        } else {
-            isUserAddedToAttendanceList = attendanceService
-                    .createRecordIntoAttendanceListByUserEmail(idLecture, authName);
-        }
-        if (isUserAddedToAttendanceList) {
-            return new ResponseEntity<>(HttpStatus.CREATED);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("lectures/{id_lecture}/attendance-list")
+    public ResponseEntity<Set<UserResponse>> getAttendanceListForLecture(@PathVariable(value = "id_lecture") Long idLecture) {
+        Set<UserResponse> usersResponse = attendanceService.getAttendanceListFromLectureId(idLecture);
+        return new ResponseEntity<>(usersResponse, HttpStatus.OK);
     }
 }

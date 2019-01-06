@@ -2,16 +2,17 @@ package com.pryjda.RestApi.service;
 
 import com.pryjda.RestApi.model.request.LectureRequest;
 import com.pryjda.RestApi.model.response.LectureResponse;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
 public interface LectureService {
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     List<LectureResponse> getLectures();
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     LectureResponse getLectureById(Long lectureId);
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -20,6 +21,7 @@ public interface LectureService {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     boolean updateLecture(Long lectureId, LectureRequest lectureRequest);
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') and " +
+            "@securityServiceImpl.hasNotTakenPlaceYet(#lectureId)")
     boolean deleteLecture(Long lectureId);
 }

@@ -1,9 +1,9 @@
 package com.pryjda.RestApi.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -19,12 +19,13 @@ public class Lecture {
     private String title;
     private String description;
     private String lecturer;
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime date;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "user_lecture",
             joinColumns = {@JoinColumn(name = "lecture_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")})
-    @JsonIgnore
     private Set<User> attendanceList = new HashSet<>();
 }

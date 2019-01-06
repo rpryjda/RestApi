@@ -2,9 +2,7 @@ package com.pryjda.RestApi.service;
 
 import com.pryjda.RestApi.entities.User;
 import com.pryjda.RestApi.entities.UserProfile;
-import com.pryjda.RestApi.exceptions.WrongUserEmailException;
 import com.pryjda.RestApi.exceptions.WrongUserIdException;
-import com.pryjda.RestApi.exceptions.WrongUserIndexNumberException;
 import com.pryjda.RestApi.model.request.UserRequest;
 import com.pryjda.RestApi.model.response.UserResponse;
 import com.pryjda.RestApi.repository.UserProfileRepository;
@@ -49,6 +47,7 @@ class UserServiceImplTest {
         userProfile.setCourseOfStudy("Civil Engineering");
 
         user = new User();
+        user.setId(1L);
         user.setEmail("robert.mickiewicz@wp.pl");
         user.setPassword("123456");
         user.setIndexNumber(100300);
@@ -87,6 +86,7 @@ class UserServiceImplTest {
 
         //then
         assertNotNull(userResponse);
+        assertEquals(Long.valueOf(1L), userResponse.getId());
         assertEquals("Robert", userResponse.getName());
         assertEquals("Mickiewicz", userResponse.getSurname());
         assertEquals("robert.mickiewicz@wp.pl", userResponse.getEmail());
@@ -110,52 +110,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void shouldGetUserByEmail() {
-        //given
-        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
-
-        //when
-        UserResponse userResponse = userService.getUserByEmail("robert.mickiewicz@wp.pl");
-
-        //then
-        assertEquals("Robert", userResponse.getName());
-    }
-
-    @Test
-    void shouldThrowWrongUserEmailExceptionWhenCallingWrongEmail() {
-        //given
-        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.ofNullable(null));
-
-        //when
-
-        //then
-        assertThrows(WrongUserEmailException.class, () -> userService.getUserByEmail("no email"));
-    }
-
-    @Test
-    void shouldGetUserByIndexNumber() {
-        //given
-        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.of(user));
-
-        //when
-        UserResponse userResponse = userService.getUserByIndexNumber(13);
-
-        //then
-        assertEquals("Robert", userResponse.getName());
-    }
-
-    @Test
-    void shouldThrowWrongUserIndexNumberExceptionWhenCallingWrongEmail() {
-        //given
-        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.ofNullable(null));
-
-        //when
-
-        //then
-        assertThrows(WrongUserIndexNumberException.class, () -> userService.getUserByIndexNumber(444));
-    }
-
-    @Test
     void shouldCreateUserAndReturnUserResponseObject() {
         //given
         when(userRepository.save(any(User.class))).thenReturn(user);
@@ -165,6 +119,7 @@ class UserServiceImplTest {
         UserResponse createdUser = userService.createUser(userRequest);
 
         //then
+        assertEquals(Long.valueOf(1L), createdUser.getId());
         assertEquals("Robert", createdUser.getName());
         assertEquals("Mickiewicz", createdUser.getSurname());
         assertEquals("robert.mickiewicz@wp.pl", createdUser.getEmail());
@@ -188,62 +143,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void shouldReturnFalseIfNotExistsUserWithIndicatedId() {
+    void shouldNotUpdateUserAndReturnFalseIfNotExistsUserWithIndicatedId() {
         //given
         when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
 
         //when
         boolean result = userService.updateUser(13L, userRequest);
-
-        //then
-        assertFalse(result);
-    }
-
-    @Test
-    void shouldUpdateUserByEmailAndReturnTrueIfExistsUserWithIndicatedEmail() {
-        //given
-        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
-        when(userProfileRepository.findById(anyLong())).thenReturn(Optional.of(userProfile));
-
-        //when
-        boolean result = userService.updateUserByEmail("robert.mickiewicz@wp.pl", userRequest);
-
-        //then
-        assertTrue(result);
-    }
-
-    @Test
-    void shouldReturnFalseIfNotExistsUserWithIndicatedEmail() {
-        //given
-        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.ofNullable(null));
-
-        //when
-        boolean result = userService.updateUserByEmail("No email", userRequest);
-
-        //then
-        assertFalse(result);
-    }
-
-    @Test
-    void shouldUpdateUserByIndexNumberAndReturnTrueIfExistsUserWithIndicatedIndexNumber() {
-        //given
-        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.of(user));
-        when(userProfileRepository.findById(anyLong())).thenReturn(Optional.of(userProfile));
-
-        //when
-        boolean result = userService.updateUserByIndexNumber(13, userRequest);
-
-        //then
-        assertTrue(result);
-    }
-
-    @Test
-    void shouldReturnFalseIfNotExistsUserWithIndicatedIndexNumber() {
-        //given
-        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.ofNullable(null));
-
-        //when
-        boolean result = userService.updateUserByIndexNumber(444, userRequest);
 
         //then
         assertFalse(result);
@@ -287,64 +192,12 @@ class UserServiceImplTest {
     }
 
     @Test
-    void shouldReturnFalseIfUserWithIndicatedIdNotExists() {
+    void shouldNotResetPasswordAndReturnFalseIfUserWithIndicatedIdNotExists() {
         //given
         when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
 
         //when
         boolean result = userService.resetPassword(444L, "new password");
-
-        //then
-        assertNotEquals("new password", user.getPassword());
-        assertFalse(result);
-    }
-
-    @Test
-    void shouldResetPasswordForUserAndReturnTrueWhenUserWithIndicatedEmailExists() {
-        //given
-        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
-
-        //when
-        boolean result = userService.resetPasswordByEmail("robert.mickiewicz@wp.pl", "new password");
-
-        //then
-        assertEquals("new password", user.getPassword());
-        assertTrue(result);
-    }
-
-    @Test
-    void shouldReturnFalseIfUserWithIndicatedEmailNotExists() {
-        //given
-        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.ofNullable(null));
-
-        //when
-        boolean result = userService.resetPasswordByEmail("no email", "new password");
-
-        //then
-        assertNotEquals("new password", user.getPassword());
-        assertFalse(result);
-    }
-
-    @Test
-    void shouldResetPasswordForUserAndReturnTrueWhenUserWithIndicatedIndexNumberExists() {
-        //given
-        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.of(user));
-
-        //when
-        boolean result = userService.resetPasswordByIndexNumber(13, "new password");
-
-        //then
-        assertEquals("new password", user.getPassword());
-        assertTrue(result);
-    }
-
-    @Test
-    void shouldReturnFalseIfUserWithIndicatedIndexNumberNotExists() {
-        //given
-        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.ofNullable(null));
-
-        //when
-        boolean result = userService.resetPasswordByIndexNumber(444, "new password");
 
         //then
         assertNotEquals("new password", user.getPassword());

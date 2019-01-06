@@ -3,16 +3,12 @@ package com.pryjda.RestApi.controller;
 import com.pryjda.RestApi.model.request.UserRequest;
 import com.pryjda.RestApi.model.response.UserResponse;
 import com.pryjda.RestApi.service.UserService;
-import com.pryjda.RestApi.utils.Helpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -67,68 +63,12 @@ public class UserController {
         }
     }
 
-    @GetMapping("/my-data")
-    public ResponseEntity<UserResponse> retrieveLoggedUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String authName = auth.getName();
-
-        UserResponse loggedUserResponse;
-        if (Helpers.isNumber(authName)) {
-            loggedUserResponse = userService.getUserByIndexNumber(Integer.parseInt(authName));
-        } else {
-            loggedUserResponse = userService.getUserByEmail(authName);
-        }
-        Optional<UserResponse> response = Optional.ofNullable(loggedUserResponse);
-
-        return response
-                .map(item -> new ResponseEntity<>(loggedUserResponse, HttpStatus.OK))
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PutMapping("/my-data")
-    public ResponseEntity<?> updateLoggedUser(@RequestBody UserRequest userRequest) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String authName = auth.getName();
-
-        boolean isUpdated;
-        if (Helpers.isNumber(authName)) {
-            isUpdated = userService.updateUserByIndexNumber(Integer.parseInt(authName), userRequest);
-        } else {
-            isUpdated = userService.updateUserByEmail(authName, userRequest);
-        }
-
-        if (isUpdated) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PatchMapping("/users/password/{id}")
+    @PatchMapping("/users/{id}/password")
     public ResponseEntity<?> updateUsersPasswordById(@PathVariable(value = "id") Long id, @RequestBody String newPassword) {
 
         boolean isChanged = userService.resetPassword(id, newPassword);
         if (isChanged) {
             return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    @PatchMapping("/password")
-    public ResponseEntity<?> updatePasswordForLoggedUser(@RequestBody String newPassword) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String authName = auth.getName();
-
-        boolean isUpdated = false;
-        if (Helpers.isNumber(authName)) {
-            isUpdated = userService.resetPasswordByIndexNumber(Integer.parseInt(authName), newPassword);
-        } else {
-            isUpdated = userService.resetPasswordByEmail(authName, newPassword);
-        }
-
-        if (isUpdated) {
-            return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
         }

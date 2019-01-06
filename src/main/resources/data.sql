@@ -12,14 +12,18 @@ VALUES ('jan.nowak@gmail.com', '12345678', 102001, true, 1),
        ('marcel.chrobry@gmail.com', '42345678', 102000, true, 4),
        ('robert.mak@gmail.com', '52345678', 102008, true, 5);
 
-INSERT INTO lecture (title, description, lecturer)
+INSERT INTO lecture (title, description, lecturer, date)
 VALUES
-       ('JavaDev 1', 'JAVA programming - JAVA SE', 'James Smith'),
-       ('JavaDev 2', 'JAVA programming - JAVA JEE', 'James Smith'),
-       ('JavaDev 3', 'JAVA programming - GIT', 'Robert Johnson'),
-       ('JavaDev 4', 'JAVA programming - databases', 'Robert Johnson'),
-       ('JavaDev 5', 'JAVA programming - Spring', 'Robert Johnson'),
-       ('JavaDev 6', 'JAVA programming - REST API', 'David Garcia');
+       ('JavaDev 1', 'JAVA programming - Introduction', 'James Smith', '2018-10-22 15:30:00'),
+       ('JavaDev 2', 'JAVA programming - Basics of Java', 'James Smith', '2018-10-29 16:30:00'),
+       ('JavaDev 3', 'JAVA programming - Tools (GIT, Maven, Jenkins)', 'Robert Johnson', '2018-11-05 16:30:00'),
+       ('JavaDev 4', 'JAVA programming - Database and ORM ', 'Robert Johnson', '2018-11-19 16:30:00'),
+       ('JavaDev 5', 'JAVA programming - Consultation', 'Robert Johnson', '2018-11-26 16:30:00'),
+       ('JavaDev 6', 'JAVA programming - Spring Framework #1', 'David Garcia', '2018-12-03 16:30:00'),
+       ('JavaDev 7', 'JAVA programming - Spring Framework #2', 'Robert Johnson', '2018-12-10 16:30:00'),
+       ('JavaDev 8', 'JAVA programming - Consultation', 'Robert Johnson', '2018-12-17 16:30:00'),
+       ('JavaDev 9', 'JAVA programming - Testing', 'Robert Johnson', '2019-01-07 16:30:00'),
+       ('JavaDev 10', 'JAVA programming - Cloud, AWS, DevOps, BigData', 'David Garcia', '2019-01-14 16:30:00');
 
 INSERT INTO user_lecture (user_id, lecture_id)
 VALUES

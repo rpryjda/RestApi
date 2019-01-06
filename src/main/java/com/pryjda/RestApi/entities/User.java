@@ -1,8 +1,6 @@
 package com.pryjda.RestApi.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -24,11 +22,9 @@ public class User {
     private boolean enabled;
 
     @ManyToMany(mappedBy = "attendanceList")
-    @JsonIgnore
     private Set<Lecture> lectures = new HashSet<>();
 
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
-    @JsonIgnore
     private Set<Role> roles = new HashSet<>();
 
     @OneToOne

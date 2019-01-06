@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class UserControllerTestIn {
+public class UserControllerTestIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,7 +50,7 @@ public class UserControllerTestIn {
     }
 
     @Test
-    @WithMockUser(username = "Admin", password = "admin123", roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     public void shouldReturnListOfUsersInJsonAndStatus200OK() throws Exception {
         this.mockMvc
                 .perform(get("/users"))
@@ -62,7 +62,7 @@ public class UserControllerTestIn {
     }
 
     @Test
-    @WithMockUser(username = "Admin", password = "admin123", roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     public void shouldCreateUserAndReturnUserRespondInJsonAndStatus201Created() throws Exception {
         this.mockMvc
                 .perform(post("/users")
@@ -76,11 +76,10 @@ public class UserControllerTestIn {
     }
 
     @Test
-    @WithMockUser(username = "Admin", password = "admin123", roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     public void shouldUpdateUserByIdAndReturnStatus204NoContent() throws Exception {
-        long id = 3;
         this.mockMvc
-                .perform(put("/users/" + id)
+                .perform(put("/users/{id}", 3)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userRequestJson))
                 .andDo(print())
@@ -88,11 +87,10 @@ public class UserControllerTestIn {
     }
 
     @Test
-    @WithMockUser(username = "Admin", password = "admin123", roles = "ADMIN")
+    @WithMockUser(roles = "ADMIN")
     public void shouldReturnStatus404NotFoundWhenTryToUpdateUserWithWrongId() throws Exception {
-        long id = 8;
         this.mockMvc
-                .perform(put("/users/" + id)
+                .perform(put("/users/{id}", 8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(userRequestJson))
                 .andDo(print())

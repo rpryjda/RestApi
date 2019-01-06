@@ -22,33 +22,19 @@ public interface UserService {
             "(authentication.getName().equals(returnObject.indexNumber.toString())))")
     UserResponse getUser(Long userId);
 
-    @PreAuthorize("hasRole('ROLE_USER')")
-    UserResponse getUserByEmail(String email);
-
-    @PreAuthorize("hasRole('ROLE_USER')")
-    UserResponse getUserByIndexNumber(int indexNumber);
-
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     UserResponse createUser(UserRequest userRequest);
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or " +
+            "(hasRole('ROLE_USER') and " +
+            "@securityServiceImpl.isIdOfLoggedUser(#userId))")
     boolean updateUser(Long userId, UserRequest userRequest);
-
-    @PreAuthorize("hasRole('ROLE_USER')")
-    boolean updateUserByEmail(String email, UserRequest userRequest);
-
-    @PreAuthorize("hasRole('ROLE_USER')")
-    boolean updateUserByIndexNumber(int indexNumber, UserRequest userRequest);
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     boolean deleteUser(Long userId);
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or " +
+            "(hasRole('ROLE_USER') and " +
+            "@securityServiceImpl.isIdOfLoggedUser(#userId))")
     boolean resetPassword(Long userId, String password);
-
-    @PreAuthorize("hasRole('ROLE_USER')")
-    boolean resetPasswordByEmail(String email, String password);
-
-    @PreAuthorize("hasRole('ROLE_USER')")
-    boolean resetPasswordByIndexNumber(int indexNumber, String password);
 }

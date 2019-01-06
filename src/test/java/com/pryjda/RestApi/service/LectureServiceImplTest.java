@@ -12,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +30,9 @@ class LectureServiceImplTest {
 
     @Mock
     private LectureRepository lectureRepository;
+
+    @Mock
+    private AttendanceService attendanceService;
 
     private Lecture lecture;
 
@@ -49,12 +53,14 @@ class LectureServiceImplTest {
         lecture.setTitle("JavaDev 1");
         lecture.setDescription("Java programming");
         lecture.setLecturer("James Tyson");
+        lecture.setDate(LocalDateTime.of(2018, 12, 17, 17, 30, 0));
         lecture.setAttendanceList(new HashSet<>(Arrays.asList(user)));
 
         lectureRequest = new LectureRequest();
         lectureRequest.setTitle("JavaDev 1");
         lectureRequest.setDescription("Java programming");
         lectureRequest.setLecturer("James Tyson");
+        lectureRequest.setDate(LocalDateTime.of(2018, 12, 17, 17, 30, 0));
     }
 
     @Test
@@ -62,6 +68,7 @@ class LectureServiceImplTest {
         //given
         List<Lecture> lectures = Arrays.asList(lecture);
         when(lectureRepository.findAll()).thenReturn(lectures);
+        when(attendanceService.getAttendanceListFromLectureObject(any(Lecture.class))).thenReturn(new HashSet<>());
 
         //when
         List<LectureResponse> lecturesResponse = lectureService.getLectures();
@@ -69,21 +76,26 @@ class LectureServiceImplTest {
         //then
         assertEquals(1, lecturesResponse.size());
         assertEquals("Java programming", lecturesResponse.get(0).getDescription());
-        assertEquals(1, lecturesResponse.get(0).getAttendanceList().size());
+        assertNotNull(lecturesResponse.get(0).getAttendanceList());
+        assertEquals(0, lecturesResponse.get(0).getAttendanceList().size());
     }
 
     @Test
     void shouldGetLectureResponseObject() {
         //given
         when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
+        when(attendanceService.getAttendanceListFromLectureObject(any(Lecture.class))).thenReturn(new HashSet<>());
 
         //when
         LectureResponse lectureResponse = lectureService.getLectureById(13L);
 
         //then
         assertNotNull(lectureResponse);
+        assertEquals(Long.valueOf(1L), lectureResponse.getId());
         assertEquals("Java programming", lectureResponse.getDescription());
-        assertEquals(1, lectureResponse.getAttendanceList().size());
+        assertEquals(LocalDateTime.of(2018, 12, 17, 17, 30, 0), lectureResponse.getDate());
+        assertNotNull(lectureResponse.getAttendanceList());
+        assertEquals(0, lectureResponse.getAttendanceList().size());
     }
 
     @Test
@@ -126,7 +138,7 @@ class LectureServiceImplTest {
     }
 
     @Test
-    void shouldReturnFalseWhenNotExistsLectureWithIndicatedId() {
+    void shouldNotUpdateLectureAndReturnFalseWhenNotExistsLectureWithIndicatedId() {
         //given
         when(lectureRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
 

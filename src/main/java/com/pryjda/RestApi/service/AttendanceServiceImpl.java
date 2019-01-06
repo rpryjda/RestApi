@@ -1,5 +1,7 @@
 package com.pryjda.RestApi.service;
 
+import com.pryjda.RestApi.entities.Lecture;
+import com.pryjda.RestApi.entities.User;
 import com.pryjda.RestApi.exceptions.WrongLectureIdException;
 import com.pryjda.RestApi.exceptions.WrongUserIdException;
 import com.pryjda.RestApi.model.response.UserResponse;
@@ -8,6 +10,9 @@ import com.pryjda.RestApi.repository.UserRepository;
 import com.pryjda.RestApi.utils.UserResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.TreeSet;
 
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
@@ -32,28 +37,29 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
-    public boolean createRecordIntoAttendanceListByUserEmail(Long lectureId, String userEmail) {
-        return lectureRepository.findById(lectureId)
-                .map(lecture -> userRepository.findUserByEmail(userEmail)
-                        .map(user -> {
-                            lecture.getAttendanceList().add(user);
-                            lectureRepository.save(lecture);
-                            return true;
-                        })
-                        .orElse(false))
-                .orElseThrow(() -> new WrongLectureIdException("number: " + lectureId + " is wrong lecture id"));
+    public Set<UserResponse> getAttendanceListFromLectureObject(Lecture lecture) {
+        Set<User> users = lecture.getAttendanceList();
+        Set<UserResponse> usersResponse = new TreeSet<>((x, y) -> (int) (x.getId() - y.getId()));
+        for (User itemUser : users) {
+            usersResponse.add(UserResponseBuilder
+                    .getUserResponseFromUserAndUserProfile(itemUser, itemUser.getUserProfile()));
+        }
+        return usersResponse;
     }
 
     @Override
-    public boolean createRecordIntoAttendanceListByUserIndexNumber(Long lectureId, int indexNumber) {
+    public Set<UserResponse> getAttendanceListFromLectureId(Long lectureId) {
+
         return lectureRepository.findById(lectureId)
-                .map(lecture -> userRepository.findUserByIndexNumber(indexNumber)
-                        .map(user -> {
-                            lecture.getAttendanceList().add(user);
-                            lectureRepository.save(lecture);
-                            return true;
-                        })
-                        .orElse(false))
+                .map(lecture -> {
+                    Set<User> users = lecture.getAttendanceList();
+                    Set<UserResponse> usersResponse = new TreeSet<>((x, y) -> (int) (x.getId() - y.getId()));
+                    for (User itemUser : users) {
+                        usersResponse.add(UserResponseBuilder
+                                .getUserResponseFromUserAndUserProfile(itemUser, itemUser.getUserProfile()));
+                    }
+                    return usersResponse;
+                })
                 .orElseThrow(() -> new WrongLectureIdException("number: " + lectureId + " is wrong lecture id"));
     }
 }

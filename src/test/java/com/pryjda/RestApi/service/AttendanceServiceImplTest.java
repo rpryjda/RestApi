@@ -14,12 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 class AttendanceServiceImplTest {
@@ -50,6 +51,7 @@ class AttendanceServiceImplTest {
         userProfile.setCourseOfStudy("Civil Engineering");
 
         user = new User();
+        user.setId(1L);
         user.setEmail("robert.mickiewicz@wp.pl");
         user.setPassword("123456");
         user.setIndexNumber(100300);
@@ -60,6 +62,7 @@ class AttendanceServiceImplTest {
         lecture.setTitle("JavaDev 1");
         lecture.setDescription("Java programming");
         lecture.setLecturer("James Tyson");
+        lecture.setAttendanceList(new HashSet<>(Arrays.asList(user)));
     }
 
     @Test
@@ -74,6 +77,7 @@ class AttendanceServiceImplTest {
 
         //then
         assertNotNull(userResponse);
+        assertEquals(Long.valueOf(1L), userResponse.getId());
         assertEquals("Robert", userResponse.getName());
         assertEquals("Mickiewicz", userResponse.getSurname());
         assertEquals("robert.mickiewicz@wp.pl", userResponse.getEmail());
@@ -110,84 +114,43 @@ class AttendanceServiceImplTest {
     }
 
     @Test
-    void shouldCreateRecordIntoAttendanceListByUserEmailAndReturnTrueWhenUserAndLectureExist() {
+    void shouldGetAttendanceListFromLectureByLectureObject() {
         //given
-        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
 
         //when
-        boolean result = attendanceService
-                .createRecordIntoAttendanceListByUserEmail(13L, "any correct e-mail");
+        Set<UserResponse> usersResponse = attendanceService.getAttendanceListFromLectureObject(lecture);
 
         //then
-        assertTrue(result);
+        assertNotNull(usersResponse);
+        assertEquals(1, usersResponse.size());
+        assertEquals(Long.valueOf(1L), ((UserResponse) (usersResponse.toArray()[0])).getId());
+        assertEquals("Robert", ((UserResponse) (usersResponse.toArray()[0])).getName());
     }
 
     @Test
-    void shouldNotCreateRecordIntoAttendanceListByUserEmailAndReturnFalseWhenUserNotExists() {
+    void shouldGetAttendanceListFromLectureByLectureId() {
         //given
-        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.ofNullable(null));
         when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
 
         //when
-        boolean result = attendanceService.createRecordIntoAttendanceListByUserEmail(13L, "wrong e-mail");
+        Set<UserResponse> usersResponse = attendanceService.getAttendanceListFromLectureId(13L);
 
         //then
-        assertFalse(result);
+        assertNotNull(usersResponse);
+        assertEquals(1, usersResponse.size());
+        assertEquals(Long.valueOf(1L), ((UserResponse) (usersResponse.toArray()[0])).getId());
+        assertEquals("Robert", ((UserResponse) (usersResponse.toArray()[0])).getName());
     }
 
     @Test
-    void shouldNotCreateRecordIntoAttendanceListByUserEmailAndThrowWrongLectureIdExceptionWhenCallingWrongLectureId() {
+    void shouldNotGetAttendanceListFromLectureAndThrowWrongLectureIdExceptionWhenIndicateWrongLectureId() {
         //given
-        when(userRepository.findUserByEmail(anyString())).thenReturn(Optional.of(user));
         when(lectureRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
 
         //when
 
         //then
-        assertThrows(WrongLectureIdException.class, () -> attendanceService
-                .createRecordIntoAttendanceListByUserEmail(13L, "any correct e-mail"));
-    }
-
-
-    @Test
-    void shouldCreateRecordIntoAttendanceListByUserIndexNumberAndReturnTrueWhenUserAndLectureExist() {
-        //given
-        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.of(user));
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
-
-        //when
-        boolean result = attendanceService
-                .createRecordIntoAttendanceListByUserIndexNumber(13L, 999);
-
-        //then
-        assertTrue(result);
-    }
-
-    @Test
-    void shouldNotCreateRecordIntoAttendanceListByUserIndexNumberAndReturnFalseWhenUserNotExists() {
-        //given
-        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.ofNullable(null));
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
-
-        //when
-        boolean result = attendanceService
-                .createRecordIntoAttendanceListByUserIndexNumber(13L, 999);
-
-        //then
-        assertFalse(result);
-    }
-
-    @Test
-    void shouldNotCreateRecordIntoAttendanceListByUserIndexNumberAndThrowWrongLectureIdExceptionWhenCallingWrongLectureId() {
-        //given
-        when(userRepository.findUserByIndexNumber(anyInt())).thenReturn(Optional.of(user));
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
-
-        //when
-
-        //then
-        assertThrows(WrongLectureIdException.class, () -> attendanceService
-                .createRecordIntoAttendanceListByUserIndexNumber(13L, 999));
+        assertThrows(WrongLectureIdException.class,
+                () -> attendanceService.getAttendanceListFromLectureId(444L));
     }
 }

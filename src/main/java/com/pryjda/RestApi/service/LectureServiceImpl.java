@@ -1,14 +1,12 @@
 package com.pryjda.RestApi.service;
 
 import com.pryjda.RestApi.entities.Lecture;
-import com.pryjda.RestApi.entities.User;
 import com.pryjda.RestApi.exceptions.WrongLectureIdException;
 import com.pryjda.RestApi.model.request.LectureRequest;
 import com.pryjda.RestApi.model.response.LectureResponse;
 import com.pryjda.RestApi.model.response.UserResponse;
 import com.pryjda.RestApi.repository.LectureRepository;
 
-import com.pryjda.RestApi.utils.UserResponseBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +19,9 @@ public class LectureServiceImpl implements LectureService {
     @Autowired
     private LectureRepository lectureRepository;
 
+    @Autowired
+    private AttendanceService attendanceService;
+
     private static final ModelMapper mapper = new ModelMapper();
 
     @Override
@@ -28,7 +29,7 @@ public class LectureServiceImpl implements LectureService {
         List<Lecture> lectures = lectureRepository.findAll();
         List<LectureResponse> lecturesResponse = new ArrayList<>();
         for (Lecture item : lectures) {
-            Set<UserResponse> usersResponse = getAttendanceList(item);
+            Set<UserResponse> usersResponse = attendanceService.getAttendanceListFromLectureObject(item);
             LectureResponse lectureResponse = mapper.map(item, LectureResponse.class);
             lectureResponse.setAttendanceList(usersResponse);
             lecturesResponse.add(lectureResponse);
@@ -36,22 +37,12 @@ public class LectureServiceImpl implements LectureService {
         return lecturesResponse;
     }
 
-    private Set<UserResponse> getAttendanceList(Lecture lecture) {
-        Set<User> users = lecture.getAttendanceList();
-        Set<UserResponse> usersResponse = new TreeSet<>((x, y) -> (int) (x.getId() - y.getId()));
-        for (User itemUser : users) {
-            usersResponse.add(UserResponseBuilder
-                    .getUserResponseFromUserAndUserProfile(itemUser, itemUser.getUserProfile()));
-        }
-        return usersResponse;
-    }
-
     @Override
     public LectureResponse getLectureById(Long lectureId) {
         return lectureRepository.findById(lectureId)
                 .map(lecture -> {
                     LectureResponse lectureResponse = mapper.map(lecture, LectureResponse.class);
-                    Set<UserResponse> usersResponse = getAttendanceList(lecture);
+                    Set<UserResponse> usersResponse = attendanceService.getAttendanceListFromLectureObject(lecture);
                     lectureResponse.setAttendanceList(usersResponse);
                     return lectureResponse;
                 })

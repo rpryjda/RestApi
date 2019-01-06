@@ -28,22 +28,6 @@ public class AppExceptionHandler {
         return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = {WrongUserEmailException.class})
-    public ResponseEntity<?> handleWrongUserEmailException(WrongUserEmailException ex) {
-        ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.setTime(LocalDateTime.now());
-        errorMessage.setMessage(ex.getLocalizedMessage());
-        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(value = {WrongUserIndexNumberException.class})
-    public ResponseEntity<?> handleWrongUserIndexNumberException(WrongUserIndexNumberException ex) {
-        ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.setTime(LocalDateTime.now());
-        errorMessage.setMessage(ex.getLocalizedMessage());
-        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler(value = {WrongLectureIdException.class})
     public ResponseEntity<?> handleWrongLectureIdException(WrongLectureIdException ex) {
         ErrorMessage errorMessage = new ErrorMessage();
@@ -59,5 +43,4 @@ public class AppExceptionHandler {
         errorMessage.setMessage(ex.getLocalizedMessage());
         return new ResponseEntity<>(errorMessage, HttpStatus.FORBIDDEN);
     }
-
 }
