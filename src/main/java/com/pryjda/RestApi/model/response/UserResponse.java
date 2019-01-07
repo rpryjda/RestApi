@@ -12,7 +12,6 @@ public class UserResponse {
     private String name;
     private String surname;
     private String email;
-    private String password;
     private String academicYear;
     private String courseOfStudy;
     private Integer indexNumber;

@@ -81,7 +81,6 @@ class AttendanceServiceImplTest {
         assertEquals("Robert", userResponse.getName());
         assertEquals("Mickiewicz", userResponse.getSurname());
         assertEquals("robert.mickiewicz@wp.pl", userResponse.getEmail());
-        assertEquals("123456", userResponse.getPassword());
         assertEquals(Integer.valueOf(100300), userResponse.getIndexNumber());
         assertEquals("Second", userResponse.getAcademicYear());
         assertEquals("Civil Engineering", userResponse.getCourseOfStudy());

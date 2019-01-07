@@ -161,10 +161,10 @@ class LectureControllerTestIT {
     }
 
     @Test
-    @WithMockUser(roles = "OTHER")
+    @WithMockUser(roles = "USER")
     void shouldReturnStatus403ForbiddenAndNotCreateLectureWhenUserIsNotAuthorized() throws Exception {
         mockMvc
-                .perform(get("/lectures")
+                .perform(post("/lectures")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(lectureRequestJson))
                 .andDo(print())

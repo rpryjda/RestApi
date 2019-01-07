@@ -18,7 +18,6 @@ public class UserResponseBuilder {
             userResponse.setId(user.getId());
             userResponse.setEmail(user.getEmail());
             userResponse.setIndexNumber(user.getIndexNumber());
-            userResponse.setPassword(user.getPassword());
         }
         return userResponse;
     }

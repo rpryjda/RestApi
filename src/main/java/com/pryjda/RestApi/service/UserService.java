@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface UserService {
 
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN', 'ROLE_USER'})")
     @PostFilter("hasRole('ROLE_ADMIN') or " +
             "(hasRole('ROLE_USER') and " +
             "(authentication.getName().equals(filterObject.getEmail())) or " +
