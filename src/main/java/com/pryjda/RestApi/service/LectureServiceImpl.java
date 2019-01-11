@@ -62,9 +62,15 @@ public class LectureServiceImpl implements LectureService {
 
         return lectureRepository.findById(lectureId)
                 .map(lecture -> {
-                    lecture.setDescription(lectureRequest.getDescription());
-                    lecture.setTitle(lectureRequest.getTitle());
-                    lecture.setLecturer(lectureRequest.getLecturer());
+                    if (lectureRequest.getDescription() != null) {
+                        lecture.setDescription(lectureRequest.getDescription());
+                    }
+                    if (lectureRequest.getTitle() != null) {
+                        lecture.setTitle(lectureRequest.getTitle());
+                    }
+                    if (lectureRequest.getLecturer() != null) {
+                        lecture.setLecturer(lectureRequest.getLecturer());
+                    }
                     lectureRepository.save(lecture);
                     return true;
                 })

@@ -3,7 +3,7 @@ package com.pryjda.RestApi.controller;
 import com.google.gson.Gson;
 
 import com.pryjda.RestApi.model.request.UserRequest;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,26 +30,40 @@ public class UserControllerTestIT {
     @Autowired
     private MockMvc mockMvc;
 
-    private UserRequest userRequest;
+    private static UserRequest userRequestCreated;
 
-    private String userRequestJson;
+    private static UserRequest userRequestUpdated;
+
+    private static String userRequestCreatedJson;
+
+    private static String userRequestUpdatedJson;
 
     private String newPassword = "new password";
 
-    private Gson gson = new Gson();
+    private static Gson gson = new Gson();
 
-    @BeforeEach
-    public void setUp() {
-        userRequest = new UserRequest();
-        userRequest.setName("Robert");
-        userRequest.setSurname("Mickiewicz");
-        userRequest.setEmail("robert.mickiewicz@wp.pl");
-        userRequest.setPassword("999999");
-        userRequest.setIndexNumber(100399);
-        userRequest.setAcademicYear("Second");
-        userRequest.setCourseOfStudy("Civil Engineering");
+    @BeforeAll
+    public static void init() {
+        userRequestCreated = new UserRequest();
+        userRequestCreated.setName("Robert");
+        userRequestCreated.setSurname("Mickiewicz");
+        userRequestCreated.setEmail("robert.mickiewicz@wp.pl");
+        userRequestCreated.setPassword("999999");
+        userRequestCreated.setIndexNumber(100399);
+        userRequestCreated.setAcademicYear("Second");
+        userRequestCreated.setCourseOfStudy("Civil Engineering");
 
-        userRequestJson = gson.toJson(userRequest);
+        userRequestCreatedJson = gson.toJson(userRequestCreated);
+
+        userRequestUpdated = new UserRequest();
+        userRequestUpdated.setName("Robert");
+        userRequestUpdated.setSurname("Mickiewicz");
+        userRequestUpdated.setEmail("robert.mickiewicz@wp.pl");
+        userRequestUpdated.setIndexNumber(100399);
+        userRequestUpdated.setAcademicYear("Second");
+        userRequestUpdated.setCourseOfStudy("Civil Engineering");
+
+        userRequestUpdatedJson = gson.toJson(userRequestUpdated);
     }
 
     @Test
@@ -152,7 +166,7 @@ public class UserControllerTestIT {
         this.mockMvc
                 .perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userRequestJson))
+                        .content(userRequestCreatedJson))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(7)))
@@ -166,7 +180,7 @@ public class UserControllerTestIT {
         mockMvc
                 .perform(post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userRequestJson))
+                        .content(userRequestCreatedJson))
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
@@ -178,7 +192,7 @@ public class UserControllerTestIT {
         this.mockMvc
                 .perform(put("/users/{id}", 3)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userRequestJson))
+                        .content(userRequestUpdatedJson))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
@@ -189,7 +203,7 @@ public class UserControllerTestIT {
         this.mockMvc
                 .perform(put("/users/{id}", 8)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userRequestJson))
+                        .content(userRequestUpdatedJson))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
@@ -201,7 +215,7 @@ public class UserControllerTestIT {
         this.mockMvc
                 .perform(put("/users/{id}", 3)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userRequestJson))
+                        .content(userRequestUpdatedJson))
                 .andDo(print())
                 .andExpect(status().isNoContent());
     }
@@ -212,7 +226,7 @@ public class UserControllerTestIT {
         this.mockMvc
                 .perform(put("/users/{id}", 3)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userRequestJson))
+                        .content(userRequestUpdatedJson))
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }
@@ -223,7 +237,7 @@ public class UserControllerTestIT {
         mockMvc
                 .perform(put("/lectures/{id}", "3")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(userRequestJson))
+                        .content(userRequestUpdatedJson))
                 .andDo(print())
                 .andExpect(status().isForbidden());
     }

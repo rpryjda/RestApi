@@ -2,11 +2,14 @@ package com.pryjda.RestApi.controller;
 
 import com.pryjda.RestApi.model.request.LectureRequest;
 import com.pryjda.RestApi.model.response.LectureResponse;
+import com.pryjda.RestApi.model.validation.order.lectureRequest.ConstraintsOrderForLectureRequestAndPostMethod;
+import com.pryjda.RestApi.model.validation.order.lectureRequest.ConstraintsOrderForLectureRequestAndPutMethod;
 import com.pryjda.RestApi.service.LectureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -37,7 +40,10 @@ public class LectureController {
     }
 
     @PostMapping("/lectures")
-    public ResponseEntity<LectureResponse> createLecture(@RequestBody LectureRequest lectureRequest) {
+    public ResponseEntity<LectureResponse> createLecture(
+            @Validated(value = ConstraintsOrderForLectureRequestAndPostMethod.class)
+            @RequestBody LectureRequest lectureRequest) {
+
         LectureResponse createdLectureResponse = lectureService.createLecture(lectureRequest);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -50,7 +56,9 @@ public class LectureController {
     }
 
     @PutMapping("/lectures/{id}")
-    public ResponseEntity<?> updateLectureById(@PathVariable(value = "id") Long id, @RequestBody LectureRequest lectureRequest) {
+    public ResponseEntity<?> updateLectureById(@PathVariable(value = "id") Long id,
+                                               @Validated(value = ConstraintsOrderForLectureRequestAndPutMethod.class)
+                                               @RequestBody LectureRequest lectureRequest) {
 
         boolean isUpdated = lectureService.updateLecture(id, lectureRequest);
         if (isUpdated) {

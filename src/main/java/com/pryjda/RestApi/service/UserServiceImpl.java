@@ -62,15 +62,26 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.findById(userId)
                 .map(user -> {
-                    user.setEmail(userRequest.getEmail());
-                    user.setIndexNumber(userRequest.getIndexNumber());
-                    user.setPassword(userRequest.getPassword());
+                    if (userRequest.getEmail() != null) {
+                        user.setEmail(userRequest.getEmail());
+                    }
+                    if (userRequest.getIndexNumber() != 0) {
+                        user.setIndexNumber(userRequest.getIndexNumber());
+                    }
                     userProfileRepository.findById(user.getUserProfile().getId())
                             .ifPresent(userProfile -> {
-                                userProfile.setName(userRequest.getName());
-                                userProfile.setSurname(userRequest.getSurname());
-                                userProfile.setAcademicYear(userRequest.getAcademicYear());
-                                userProfile.setCourseOfStudy(userRequest.getCourseOfStudy());
+                                if (userRequest.getName() != null) {
+                                    userProfile.setName(userRequest.getName());
+                                }
+                                if (userRequest.getSurname() != null) {
+                                    userProfile.setSurname(userRequest.getSurname());
+                                }
+                                if (userRequest.getAcademicYear() != null) {
+                                    userProfile.setAcademicYear(userRequest.getAcademicYear());
+                                }
+                                if (userRequest.getCourseOfStudy() != null) {
+                                    userProfile.setCourseOfStudy(userRequest.getCourseOfStudy());
+                                }
                             });
                     userRepository.save(user);
                     return true;

@@ -2,7 +2,7 @@ package com.pryjda.RestApi.controller;
 
 import com.google.gson.*;
 import com.pryjda.RestApi.model.request.LectureRequest;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,11 +31,11 @@ class LectureControllerTestIT {
     @Autowired
     private MockMvc mockMvc;
 
-    private LectureRequest lectureRequest;
+    private static LectureRequest lectureRequest;
 
-    private String lectureRequestJson;
+    private static String lectureRequestJson;
 
-    private Gson gson = new GsonBuilder()
+    private static Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class,
                     (JsonSerializer<LocalDateTime>) (localDateTime, type,
                                                      jsonSerializationContext) ->
@@ -43,8 +43,8 @@ class LectureControllerTestIT {
                                     .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))))
             .create();
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void build() {
         lectureRequest = new LectureRequest();
         lectureRequest.setTitle("JavaDev TEST");
         lectureRequest.setDescription("Java programming");
@@ -210,7 +210,7 @@ class LectureControllerTestIT {
     @WithMockUser(roles = "ADMIN")
     void shouldDeleteLectureByIdAndReturnStatus200OKForAdminAccountWhenLectureHasNotTakenPlaceYet() throws Exception {
         mockMvc
-                .perform(delete("/lectures/{id}", "5"))
+                .perform(delete("/lectures/{id}", "6"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
