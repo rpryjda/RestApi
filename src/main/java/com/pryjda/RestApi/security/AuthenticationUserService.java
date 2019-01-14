@@ -38,7 +38,7 @@ public class AuthenticationUserService implements UserDetailsService {
                     .stream()
                     .forEach(item -> authorities.add(new SimpleGrantedAuthority(item.getName())));
             return User.withUsername(userByEmail.get().getEmail())
-                    .password("{noop}" + userByEmail.get().getPassword())
+                    .password(userByEmail.get().getPassword())
                     .authorities(authorities)
                     .build();
         } else if (userByIndexNumber.isPresent()) {
@@ -46,7 +46,7 @@ public class AuthenticationUserService implements UserDetailsService {
                     .stream()
                     .forEach(item -> authorities.add(new SimpleGrantedAuthority(item.getName())));
             return User.withUsername(userByIndexNumber.get().getIndexNumber().toString())
-                    .password("{noop}" + userByIndexNumber.get().getPassword())
+                    .password(userByIndexNumber.get().getPassword())
                     .authorities(authorities)
                     .build();
         } else {

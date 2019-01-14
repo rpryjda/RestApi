@@ -19,8 +19,12 @@ import java.util.List;
 @RestController
 public class LectureController {
 
+    private final LectureService lectureService;
+
     @Autowired
-    private LectureService lectureService;
+    public LectureController(LectureService lectureService) {
+        this.lectureService = lectureService;
+    }
 
     @GetMapping("/lectures")
     public ResponseEntity<List<LectureResponse>> retrieveAllLectures() {

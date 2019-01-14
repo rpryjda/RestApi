@@ -17,11 +17,15 @@ import java.util.TreeSet;
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final LectureRepository lectureRepository;
 
     @Autowired
-    LectureRepository lectureRepository;
+    public AttendanceServiceImpl(UserRepository userRepository, LectureRepository lectureRepository) {
+        this.userRepository = userRepository;
+        this.lectureRepository = lectureRepository;
+    }
 
     @Override
     public UserResponse createRecordIntoAttendanceListByUserId(Long lectureId, Long userId) {

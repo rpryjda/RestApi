@@ -18,8 +18,12 @@ import java.util.List;
 @RestController
 public class UserController {
 
+    private final UserService userService;
+
     @Autowired
-    private UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/users")
     public ResponseEntity<List<UserResponse>> retrieveAllUsers() {

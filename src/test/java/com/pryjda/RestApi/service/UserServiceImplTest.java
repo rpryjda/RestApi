@@ -5,6 +5,7 @@ import com.pryjda.RestApi.entities.UserProfile;
 import com.pryjda.RestApi.exceptions.WrongUserIdException;
 import com.pryjda.RestApi.model.request.UserRequest;
 import com.pryjda.RestApi.model.response.UserResponse;
+import com.pryjda.RestApi.repository.RoleRepository;
 import com.pryjda.RestApi.repository.UserProfileRepository;
 import com.pryjda.RestApi.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,10 +13,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -31,6 +31,12 @@ class UserServiceImplTest {
 
     @Mock
     private UserProfileRepository userProfileRepository;
+
+    @Mock
+    private RoleRepository roleRepository;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     private User user;
     private UserProfile userProfile;
@@ -112,7 +118,8 @@ class UserServiceImplTest {
     void shouldCreateUserAndReturnUserResponseObject() {
         //given
         when(userRepository.save(any(User.class))).thenReturn(user);
-        when(userProfileRepository.save(any(UserProfile.class))).thenReturn(userProfile);
+        when(roleRepository.findAll()).thenReturn(new ArrayList<>());
+        when(passwordEncoder.encode(anyString())).thenReturn("1234");
 
         //when
         UserResponse createdUser = userService.createUser(userRequest);

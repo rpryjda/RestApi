@@ -12,8 +12,12 @@ import java.util.Set;
 @RestController
 public class AttendanceController {
 
+    private final AttendanceService attendanceService;
+
     @Autowired
-    private AttendanceService attendanceService;
+    public AttendanceController(AttendanceService attendanceService) {
+        this.attendanceService = attendanceService;
+    }
 
     @PostMapping("/registry/lectures/{id_lecture}/users/{id_user}")
     public ResponseEntity<?> assignUserToAttendanceList(@PathVariable(value = "id_lecture") Long idLecture,

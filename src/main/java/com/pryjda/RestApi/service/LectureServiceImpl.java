@@ -16,13 +16,17 @@ import java.util.*;
 @Service
 public class LectureServiceImpl implements LectureService {
 
-    @Autowired
-    private LectureRepository lectureRepository;
+    private final LectureRepository lectureRepository;
 
-    @Autowired
-    private AttendanceService attendanceService;
+    private final AttendanceService attendanceService;
 
     private static final ModelMapper mapper = new ModelMapper();
+
+    @Autowired
+    public LectureServiceImpl(LectureRepository lectureRepository, AttendanceService attendanceService) {
+        this.lectureRepository = lectureRepository;
+        this.attendanceService = attendanceService;
+    }
 
     @Override
     public List<LectureResponse> getLectures() {

@@ -6,11 +6,11 @@ VALUES ('Jan', 'Nowak', 'second', 'Civil Engineering'),
        ('Robert', 'Mak', 'first', 'Chemistry');
 
 INSERT INTO user (email, password, index_number, enabled, user_profile_id)
-VALUES ('jan.nowak@gmail.com', '12345678', 102001, true, 1),
-       ('adam.kowalski@gmail.com', '22345678', 102022, true, 2),
-       ('piotr.rybka@gmail.com', '32345678', 102033, true, 3),
-       ('marcel.chrobry@gmail.com', '42345678', 102000, true, 4),
-       ('robert.mak@gmail.com', '52345678', 102008, true, 5);
+VALUES ('jan.nowak@gmail.com', '$2a$10$Ookf3n66njkuSAykAo8S4uO/s7vxQdcFdU4Ykikt04Z6qYZH2E5oa', 102001, true, 1),
+       ('adam.kowalski@gmail.com', '$2a$10$Ookf3n66njkuSAykAo8S4uO/s7vxQdcFdU4Ykikt04Z6qYZH2E5oa', 102022, true, 2),
+       ('piotr.rybka@gmail.com', '$2a$10$Ookf3n66njkuSAykAo8S4uO/s7vxQdcFdU4Ykikt04Z6qYZH2E5oa', 102033, true, 3),
+       ('marcel.chrobry@gmail.com', '$2a$10$Ookf3n66njkuSAykAo8S4uO/s7vxQdcFdU4Ykikt04Z6qYZH2E5oa', 102000, true, 4),
+       ('robert.mak@gmail.com', '$2a$10$Ookf3n66njkuSAykAo8S4uO/s7vxQdcFdU4Ykikt04Z6qYZH2E5oa', 102008, true, 5);
 
 INSERT INTO lecture (title, description, lecturer, date)
 VALUES

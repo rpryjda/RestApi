@@ -15,11 +15,15 @@ import java.util.Optional;
 @Service
 public class SecurityServiceImpl implements SecurityService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final LectureRepository lectureRepository;
 
     @Autowired
-    private LectureRepository lectureRepository;
+    public SecurityServiceImpl(UserRepository userRepository, LectureRepository lectureRepository) {
+        this.userRepository = userRepository;
+        this.lectureRepository = lectureRepository;
+    }
 
     @Override
     public boolean isIdOfLoggedUser(Long id) {

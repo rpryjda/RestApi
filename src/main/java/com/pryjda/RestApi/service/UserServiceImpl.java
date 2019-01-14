@@ -5,26 +5,38 @@ import com.pryjda.RestApi.entities.UserProfile;
 import com.pryjda.RestApi.exceptions.WrongUserIdException;
 import com.pryjda.RestApi.model.request.UserRequest;
 import com.pryjda.RestApi.model.response.UserResponse;
+import com.pryjda.RestApi.repository.RoleRepository;
 import com.pryjda.RestApi.repository.UserProfileRepository;
 import com.pryjda.RestApi.repository.UserRepository;
 import com.pryjda.RestApi.utils.UserResponseBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private UserProfileRepository userProfileRepository;
+    private final UserProfileRepository userProfileRepository;
+
+    private final RoleRepository roleRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     private static final ModelMapper mapper = new ModelMapper();
+
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository,
+                           RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public List<UserResponse> getUsers() {
@@ -49,6 +61,13 @@ public class UserServiceImpl implements UserService {
         User user = mapper.map(userRequest, User.class);
         UserProfile userProfile = mapper.map(userRequest, UserProfile.class);
 
+        roleRepository.findAll()
+                .stream()
+                .filter(role -> role.getName().equals("ROLE_USER"))
+                .forEach(role -> role.getUsers().add(user));
+
+        user.setEnabled(true);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setUserProfile(userProfile);
         userProfile.setUser(user);
         userProfileRepository.save(userProfile);

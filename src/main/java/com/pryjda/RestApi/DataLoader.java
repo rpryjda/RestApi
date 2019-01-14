@@ -7,16 +7,24 @@ import com.pryjda.RestApi.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DataLoader implements ApplicationRunner {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final RoleRepository roleRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    private RoleRepository roleRepository;
+    public DataLoader(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -24,7 +32,7 @@ public class DataLoader implements ApplicationRunner {
         User admin = new User();
         admin.setEmail("Admin");
         admin.setIndexNumber(777);
-        admin.setPassword("admin123");
+        admin.setPassword(passwordEncoder.encode("user123"));
         admin.setEnabled(true);
         userRepository.save(admin);
 
