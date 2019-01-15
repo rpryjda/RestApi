@@ -5,6 +5,7 @@ import com.pryjda.RestApi.entities.UserProfile;
 import com.pryjda.RestApi.exceptions.WrongUserIdException;
 import com.pryjda.RestApi.model.request.UserRequest;
 import com.pryjda.RestApi.model.response.UserResponse;
+import com.pryjda.RestApi.repository.LectureRepository;
 import com.pryjda.RestApi.repository.RoleRepository;
 import com.pryjda.RestApi.repository.UserProfileRepository;
 import com.pryjda.RestApi.repository.UserRepository;
@@ -13,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -25,26 +27,29 @@ public class UserServiceImpl implements UserService {
 
     private final RoleRepository roleRepository;
 
+    private final LectureRepository lectureRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     private static final ModelMapper mapper = new ModelMapper();
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository,
-                           RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+                           RoleRepository roleRepository, PasswordEncoder passwordEncoder, LectureRepository lectureRepository) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.lectureRepository = lectureRepository;
     }
 
     @Override
     public List<UserResponse> getUsers() {
         List<User> users = userRepository.findAll();
         List<UserResponse> usersResponse = new ArrayList<>();
-        for (User item : users) {
-            usersResponse.add(UserResponseBuilder.getUserResponseFromUserAndUserProfile(item, item.getUserProfile()));
-        }
+        users.stream()
+                .forEach(user -> usersResponse.add(UserResponseBuilder.
+                        getUserResponseFromUserAndUserProfile(user, user.getUserProfile())));
         return usersResponse;
     }
 
@@ -60,23 +65,20 @@ public class UserServiceImpl implements UserService {
     public UserResponse createUser(UserRequest userRequest) {
         User user = mapper.map(userRequest, User.class);
         UserProfile userProfile = mapper.map(userRequest, UserProfile.class);
-
         roleRepository.findAll()
                 .stream()
                 .filter(role -> role.getName().equals("ROLE_USER"))
                 .forEach(role -> role.getUsers().add(user));
-
         user.setEnabled(true);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setUserProfile(userProfile);
-        userProfile.setUser(user);
-        userProfileRepository.save(userProfile);
         User createdUser = userRepository.save(user);
 
         return UserResponseBuilder.getUserResponseFromUserAndUserProfile(createdUser, createdUser.getUserProfile());
     }
 
     @Override
+    @Transactional
     public boolean updateUser(Long userId, UserRequest userRequest) {
 
         return userRepository.findById(userId)
@@ -102,7 +104,6 @@ public class UserServiceImpl implements UserService {
                                     userProfile.setCourseOfStudy(userRequest.getCourseOfStudy());
                                 }
                             });
-                    userRepository.save(user);
                     return true;
                 })
                 .orElse(false);
@@ -113,6 +114,8 @@ public class UserServiceImpl implements UserService {
 
         return userRepository.findById(userId)
                 .map(user -> {
+                    lectureRepository.findAll().stream()
+                            .forEach(lecture -> lecture.getAttendanceList().remove(user));
                     userRepository.delete(user);
                     return true;
                 })
@@ -120,12 +123,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public boolean resetPassword(Long userId, String password) {
 
         return userRepository.findById(userId)
                 .map(user -> {
-                    user.setPassword(password);
-                    userRepository.save(user);
+                    user.setPassword(passwordEncoder.encode(password));
                     return true;
                 })
                 .orElse(false);

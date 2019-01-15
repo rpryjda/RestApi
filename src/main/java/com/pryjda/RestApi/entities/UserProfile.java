@@ -21,6 +21,7 @@ public class UserProfile {
     private String academicYear;
     private String courseOfStudy;
 
-    @OneToOne(mappedBy = "userProfile", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "userProfile")
+    @Transient
     private User user;
 }

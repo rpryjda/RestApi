@@ -19,7 +19,7 @@ VALUES
        ('JavaDev 3 TEST', 'JAVA programming - GIT', 'Robert Johnson', '2018-12-10 16:30:00'),
        ('JavaDev 4 TEST', 'JAVA programming - databases', 'Robert Johnson', '2018-12-17 16:30:00'),
        ('JavaDev 5 TEST', 'JAVA programming - Spring', 'Robert Johnson', '2019-01-07 16:30:00'),
-       ('JavaDev 6 TEST', 'JAVA programming - REST API', 'David Garcia', '2019-01-14 16:30:00');
+       ('JavaDev 6 TEST', 'JAVA programming - REST API', 'David Garcia', '2020-01-14 16:30:00');
 
 INSERT INTO user_lecture (user_id, lecture_id)
 VALUES

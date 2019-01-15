@@ -5,6 +5,7 @@ import com.pryjda.RestApi.entities.UserProfile;
 import com.pryjda.RestApi.exceptions.WrongUserIdException;
 import com.pryjda.RestApi.model.request.UserRequest;
 import com.pryjda.RestApi.model.response.UserResponse;
+import com.pryjda.RestApi.repository.LectureRepository;
 import com.pryjda.RestApi.repository.RoleRepository;
 import com.pryjda.RestApi.repository.UserProfileRepository;
 import com.pryjda.RestApi.repository.UserRepository;
@@ -34,6 +35,9 @@ class UserServiceImplTest {
 
     @Mock
     private RoleRepository roleRepository;
+
+    @Mock
+    private LectureRepository lectureRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -163,6 +167,7 @@ class UserServiceImplTest {
     void shouldDeleteUserAndReturnTrue() {
         //given
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(lectureRepository.findAll()).thenReturn(new ArrayList<>());
 
         //when
         boolean result = userService.deleteUser(13L);
@@ -187,12 +192,12 @@ class UserServiceImplTest {
     void shouldResetPasswordForUserAndReturnTrueWhenUserWithIndicatedIdExists() {
         //given
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode(anyString())).thenReturn("1234");
 
         //when
         boolean result = userService.resetPassword(13L, "new password");
 
         //then
-        assertEquals("new password", user.getPassword());
         assertTrue(result);
     }
 
@@ -200,6 +205,7 @@ class UserServiceImplTest {
     void shouldNotResetPasswordAndReturnFalseIfUserWithIndicatedIdNotExists() {
         //given
         when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+        when(passwordEncoder.encode(anyString())).thenReturn("1234");
 
         //when
         boolean result = userService.resetPassword(444L, "new password");

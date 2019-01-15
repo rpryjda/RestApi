@@ -10,6 +10,7 @@ import com.pryjda.RestApi.repository.LectureRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -32,12 +33,13 @@ public class LectureServiceImpl implements LectureService {
     public List<LectureResponse> getLectures() {
         List<Lecture> lectures = lectureRepository.findAll();
         List<LectureResponse> lecturesResponse = new ArrayList<>();
-        for (Lecture item : lectures) {
-            Set<UserResponse> usersResponse = attendanceService.getAttendanceListFromLectureObject(item);
-            LectureResponse lectureResponse = mapper.map(item, LectureResponse.class);
-            lectureResponse.setAttendanceList(usersResponse);
-            lecturesResponse.add(lectureResponse);
-        }
+        lectures.stream()
+                .forEach(item -> {
+                    Set<UserResponse> usersResponse = attendanceService.getAttendanceListFromLectureObject(item);
+                    LectureResponse lectureResponse = mapper.map(item, LectureResponse.class);
+                    lectureResponse.setAttendanceList(usersResponse);
+                    lecturesResponse.add(lectureResponse);
+                });
         return lecturesResponse;
     }
 
@@ -62,6 +64,7 @@ public class LectureServiceImpl implements LectureService {
     }
 
     @Override
+    @Transactional
     public boolean updateLecture(Long lectureId, LectureRequest lectureRequest) {
 
         return lectureRepository.findById(lectureId)
@@ -75,7 +78,6 @@ public class LectureServiceImpl implements LectureService {
                     if (lectureRequest.getLecturer() != null) {
                         lecture.setLecturer(lectureRequest.getLecturer());
                     }
-                    lectureRepository.save(lecture);
                     return true;
                 })
                 .orElse(false);

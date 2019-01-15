@@ -22,7 +22,7 @@ public class Lecture {
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime date;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
             name = "user_lecture",
             joinColumns = {@JoinColumn(name = "lecture_id", referencedColumnName = "id")},

@@ -10,6 +10,7 @@ import com.pryjda.RestApi.repository.UserRepository;
 import com.pryjda.RestApi.utils.UserResponseBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -28,12 +29,12 @@ public class AttendanceServiceImpl implements AttendanceService {
     }
 
     @Override
+    @Transactional
     public UserResponse createRecordIntoAttendanceListByUserId(Long lectureId, Long userId) {
         return lectureRepository.findById(lectureId)
                 .map(lecture -> userRepository.findById(userId)
                         .map(user -> {
                             lecture.getAttendanceList().add(user);
-                            lectureRepository.save(lecture);
                             return UserResponseBuilder.getUserResponseFromUserAndUserProfile(user, user.getUserProfile());
                         })
                         .orElseThrow(() -> new WrongUserIdException("number: " + userId + " is wrong user id")))
@@ -44,10 +45,9 @@ public class AttendanceServiceImpl implements AttendanceService {
     public Set<UserResponse> getAttendanceListFromLectureObject(Lecture lecture) {
         Set<User> users = lecture.getAttendanceList();
         Set<UserResponse> usersResponse = new TreeSet<>((x, y) -> (int) (x.getId() - y.getId()));
-        for (User itemUser : users) {
-            usersResponse.add(UserResponseBuilder
-                    .getUserResponseFromUserAndUserProfile(itemUser, itemUser.getUserProfile()));
-        }
+        users.stream()
+                .forEach(user -> usersResponse.add(UserResponseBuilder
+                        .getUserResponseFromUserAndUserProfile(user, user.getUserProfile())));
         return usersResponse;
     }
 
@@ -58,10 +58,9 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .map(lecture -> {
                     Set<User> users = lecture.getAttendanceList();
                     Set<UserResponse> usersResponse = new TreeSet<>((x, y) -> (int) (x.getId() - y.getId()));
-                    for (User itemUser : users) {
-                        usersResponse.add(UserResponseBuilder
-                                .getUserResponseFromUserAndUserProfile(itemUser, itemUser.getUserProfile()));
-                    }
+                    users.stream()
+                            .forEach(user -> usersResponse.add(UserResponseBuilder
+                                    .getUserResponseFromUserAndUserProfile(user, user.getUserProfile())));
                     return usersResponse;
                 })
                 .orElseThrow(() -> new WrongLectureIdException("number: " + lectureId + " is wrong lecture id"));
