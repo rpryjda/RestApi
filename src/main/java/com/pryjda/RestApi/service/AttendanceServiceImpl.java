@@ -1,6 +1,5 @@
 package com.pryjda.RestApi.service;
 
-import com.pryjda.RestApi.entities.Lecture;
 import com.pryjda.RestApi.entities.User;
 import com.pryjda.RestApi.exceptions.WrongLectureIdException;
 import com.pryjda.RestApi.exceptions.WrongUserIdException;
@@ -39,16 +38,6 @@ public class AttendanceServiceImpl implements AttendanceService {
                         })
                         .orElseThrow(() -> new WrongUserIdException("number: " + userId + " is wrong user id")))
                 .orElseThrow(() -> new WrongLectureIdException("number: " + lectureId + " is wrong lecture id"));
-    }
-
-    @Override
-    public Set<UserResponse> getAttendanceListFromLectureObject(Lecture lecture) {
-        Set<User> users = lecture.getAttendanceList();
-        Set<UserResponse> usersResponse = new TreeSet<>((x, y) -> (int) (x.getId() - y.getId()));
-        users.stream()
-                .forEach(user -> usersResponse.add(UserResponseBuilder
-                        .getUserResponseFromUserAndUserProfile(user, user.getUserProfile())));
-        return usersResponse;
     }
 
     @Override

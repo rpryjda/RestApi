@@ -6,6 +6,7 @@ import com.pryjda.RestApi.exceptions.WrongLectureIdException;
 import com.pryjda.RestApi.model.request.LectureRequest;
 import com.pryjda.RestApi.model.response.LectureResponse;
 import com.pryjda.RestApi.repository.LectureRepository;
+import com.pryjda.RestApi.utils.AttendanceListForLectureService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -32,9 +33,11 @@ class LectureServiceImplTest {
     private LectureRepository lectureRepository;
 
     @Mock
-    private AttendanceService attendanceService;
+    private AttendanceListForLectureService attendanceList;
 
     private Lecture lecture;
+
+    private Lecture lectureThatTookPlace;
 
     private LectureRequest lectureRequest;
 
@@ -53,8 +56,16 @@ class LectureServiceImplTest {
         lecture.setTitle("JavaDev 1");
         lecture.setDescription("Java programming");
         lecture.setLecturer("James Tyson");
-        lecture.setDate(LocalDateTime.of(2018, 12, 17, 17, 30, 0));
+        lecture.setDate(LocalDateTime.of(2020, 12, 17, 17, 30, 0));
         lecture.setAttendanceList(new HashSet<>(Arrays.asList(user)));
+
+        lectureThatTookPlace = new Lecture();
+        lectureThatTookPlace.setId(2L);
+        lectureThatTookPlace.setTitle("JavaDev 2");
+        lectureThatTookPlace.setDescription("Java programming");
+        lectureThatTookPlace.setLecturer("James Tyson");
+        lectureThatTookPlace.setDate(LocalDateTime.of(2018, 12, 17, 17, 30, 0));
+        lectureThatTookPlace.setAttendanceList(new HashSet<>(Arrays.asList(user)));
 
         lectureRequest = new LectureRequest();
         lectureRequest.setTitle("JavaDev 1");
@@ -68,7 +79,7 @@ class LectureServiceImplTest {
         //given
         List<Lecture> lectures = Arrays.asList(lecture);
         when(lectureRepository.findAll()).thenReturn(lectures);
-        when(attendanceService.getAttendanceListFromLectureObject(any(Lecture.class))).thenReturn(new HashSet<>());
+        when(attendanceList.getAttendanceListFromLectureObject(any(Lecture.class))).thenReturn(new HashSet<>());
 
         //when
         List<LectureResponse> lecturesResponse = lectureService.getLectures();
@@ -84,7 +95,7 @@ class LectureServiceImplTest {
     void shouldGetLectureResponseObject() {
         //given
         when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
-        when(attendanceService.getAttendanceListFromLectureObject(any(Lecture.class))).thenReturn(new HashSet<>());
+        when(attendanceList.getAttendanceListFromLectureObject(any(Lecture.class))).thenReturn(new HashSet<>());
 
         //when
         LectureResponse lectureResponse = lectureService.getLectureById(13L);
@@ -93,7 +104,7 @@ class LectureServiceImplTest {
         assertNotNull(lectureResponse);
         assertEquals(Long.valueOf(1L), lectureResponse.getId());
         assertEquals("Java programming", lectureResponse.getDescription());
-        assertEquals(LocalDateTime.of(2018, 12, 17, 17, 30, 0), lectureResponse.getDate());
+        assertEquals(LocalDateTime.of(2020, 12, 17, 17, 30, 0), lectureResponse.getDate());
         assertNotNull(lectureResponse.getAttendanceList());
         assertEquals(0, lectureResponse.getAttendanceList().size());
     }
@@ -101,7 +112,7 @@ class LectureServiceImplTest {
     @Test
     void shouldThrowWrongLectureIdExceptionWhenCallingWrongLectureId() {
         //given
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         //when
 
@@ -140,7 +151,7 @@ class LectureServiceImplTest {
     @Test
     void shouldNotUpdateLectureAndReturnFalseWhenNotExistsLectureWithIndicatedId() {
         //given
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         //when
         boolean result = lectureService.updateLecture(444L, lectureRequest);
@@ -163,14 +174,27 @@ class LectureServiceImplTest {
     }
 
     @Test
-    void shouldReturnFalseWhenDeleteLectureThatNotExists() {
+    void shouldNotDeleteLectureAndReturnFalseWhenDeleteLectureThatTookPlace() {
         //given
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lectureThatTookPlace));
 
         //when
         boolean result = lectureService.deleteLecture(444L);
 
         //then
+
         assertFalse(result);
+    }
+
+    @Test
+    void shouldNotDeleteLectureAndThrowWrongLectureIdExceptionWhenCallingWrongLectureId() {
+        //given
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        //when
+
+        //then
+        assertThrows(WrongLectureIdException.class,
+                () -> lectureService.getLectureById(444L));
     }
 }

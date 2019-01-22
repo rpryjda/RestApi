@@ -90,7 +90,7 @@ class AttendanceServiceImplTest {
     void shouldThrowWrongUserIdExceptionWhenCallingWrongUserId() {
         //given
         when(lectureRepository.findById(anyLong())).thenReturn(Optional.of(lecture));
-        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         //when
 
@@ -102,7 +102,7 @@ class AttendanceServiceImplTest {
     @Test
     void shouldThrowWrongLectureIdExceptionWhenCallingWrongLectureId() {
         //given
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.empty());
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         //when
@@ -110,20 +110,6 @@ class AttendanceServiceImplTest {
         //then
         assertThrows(WrongLectureIdException.class, () -> attendanceService
                 .createRecordIntoAttendanceListByUserId(13L, 13L));
-    }
-
-    @Test
-    void shouldGetAttendanceListFromLectureByLectureObject() {
-        //given
-
-        //when
-        Set<UserResponse> usersResponse = attendanceService.getAttendanceListFromLectureObject(lecture);
-
-        //then
-        assertNotNull(usersResponse);
-        assertEquals(1, usersResponse.size());
-        assertEquals(Long.valueOf(1L), ((UserResponse) (usersResponse.toArray()[0])).getId());
-        assertEquals("Robert", ((UserResponse) (usersResponse.toArray()[0])).getName());
     }
 
     @Test
@@ -144,7 +130,7 @@ class AttendanceServiceImplTest {
     @Test
     void shouldNotGetAttendanceListFromLectureAndThrowWrongLectureIdExceptionWhenIndicateWrongLectureId() {
         //given
-        when(lectureRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+        when(lectureRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         //when
 

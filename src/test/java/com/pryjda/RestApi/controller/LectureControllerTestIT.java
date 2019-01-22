@@ -49,7 +49,7 @@ class LectureControllerTestIT {
         lectureRequest.setTitle("JavaDev TEST");
         lectureRequest.setDescription("Java programming");
         lectureRequest.setLecturer("James Tyson");
-        lectureRequest.setDate(LocalDateTime.of(2019, 1, 21, 17, 30));
+        lectureRequest.setDate(LocalDateTime.of(2020, 1, 21, 17, 30));
 
         lectureRequestJson = gson.toJson(lectureRequest);
     }
@@ -156,7 +156,7 @@ class LectureControllerTestIT {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.title", is("JavaDev TEST")))
-                .andExpect(jsonPath("$.date", is("2019-01-21 17:30")))
+                .andExpect(jsonPath("$.date", is("2020-01-21 17:30")))
                 .andExpect(jsonPath("$.attendanceList", hasSize(0)));
     }
 

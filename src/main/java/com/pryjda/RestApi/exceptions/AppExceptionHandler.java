@@ -16,24 +16,11 @@ import java.time.LocalDateTime;
 @ControllerAdvice
 public class AppExceptionHandler {
 
-    @ExceptionHandler(value = {Exception.class})
+    @ExceptionHandler(value = {Exception.class,
+            WrongLectureIdException.class,
+            WrongLectureIdException.class,
+            EmptyUsersListException.class})
     public ResponseEntity<?> handleExceptions(Exception ex) {
-        ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.setTime(LocalDateTime.now());
-        errorMessage.setMessage(ex.getLocalizedMessage());
-        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(value = {WrongUserIdException.class})
-    public ResponseEntity<?> handleWrongUserIdException(WrongUserIdException ex) {
-        ErrorMessage errorMessage = new ErrorMessage();
-        errorMessage.setTime(LocalDateTime.now());
-        errorMessage.setMessage(ex.getLocalizedMessage());
-        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler(value = {WrongLectureIdException.class})
-    public ResponseEntity<?> handleWrongLectureIdException(WrongLectureIdException ex) {
         ErrorMessage errorMessage = new ErrorMessage();
         errorMessage.setTime(LocalDateTime.now());
         errorMessage.setMessage(ex.getLocalizedMessage());

@@ -7,11 +7,13 @@ import com.pryjda.RestApi.model.response.LectureResponse;
 import com.pryjda.RestApi.model.response.UserResponse;
 import com.pryjda.RestApi.repository.LectureRepository;
 
+import com.pryjda.RestApi.utils.AttendanceListForLectureService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -19,14 +21,14 @@ public class LectureServiceImpl implements LectureService {
 
     private final LectureRepository lectureRepository;
 
-    private final AttendanceService attendanceService;
+    private final AttendanceListForLectureService attendanceList;
 
     private static final ModelMapper mapper = new ModelMapper();
 
     @Autowired
-    public LectureServiceImpl(LectureRepository lectureRepository, AttendanceService attendanceService) {
+    public LectureServiceImpl(LectureRepository lectureRepository, AttendanceListForLectureService attendanceList) {
         this.lectureRepository = lectureRepository;
-        this.attendanceService = attendanceService;
+        this.attendanceList = attendanceList;
     }
 
     @Override
@@ -35,7 +37,7 @@ public class LectureServiceImpl implements LectureService {
         List<LectureResponse> lecturesResponse = new ArrayList<>();
         lectures.stream()
                 .forEach(item -> {
-                    Set<UserResponse> usersResponse = attendanceService.getAttendanceListFromLectureObject(item);
+                    Set<UserResponse> usersResponse = attendanceList.getAttendanceListFromLectureObject(item);
                     LectureResponse lectureResponse = mapper.map(item, LectureResponse.class);
                     lectureResponse.setAttendanceList(usersResponse);
                     lecturesResponse.add(lectureResponse);
@@ -48,7 +50,7 @@ public class LectureServiceImpl implements LectureService {
         return lectureRepository.findById(lectureId)
                 .map(lecture -> {
                     LectureResponse lectureResponse = mapper.map(lecture, LectureResponse.class);
-                    Set<UserResponse> usersResponse = attendanceService.getAttendanceListFromLectureObject(lecture);
+                    Set<UserResponse> usersResponse = attendanceList.getAttendanceListFromLectureObject(lecture);
                     lectureResponse.setAttendanceList(usersResponse);
                     return lectureResponse;
                 })
@@ -88,9 +90,14 @@ public class LectureServiceImpl implements LectureService {
 
         return lectureRepository.findById(lectureId)
                 .map(lecture -> {
-                    lectureRepository.deleteById(lectureId);
-                    return true;
+                    LocalDateTime lectureDate = lecture.getDate();
+                    if (lectureDate.isAfter(LocalDateTime.now())) {
+                        lectureRepository.deleteById(lectureId);
+                        return true;
+                    } else {
+                        return false;
+                    }
                 })
-                .orElse(false);
+                .orElseThrow(() -> new WrongLectureIdException("number: " + lectureId + " is wrong lecture id"));
     }
 }

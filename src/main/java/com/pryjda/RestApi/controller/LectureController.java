@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,6 +28,7 @@ public class LectureController {
     }
 
     @GetMapping("/lectures")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<List<LectureResponse>> retrieveAllLectures() {
         List<LectureResponse> lecturesResponse = lectureService.getLectures();
 
@@ -38,12 +40,14 @@ public class LectureController {
     }
 
     @GetMapping("/lectures/{id}")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<LectureResponse> getLecture(@PathVariable(value = "id") Long id) {
         LectureResponse lectureResponse = lectureService.getLectureById(id);
         return new ResponseEntity<>(lectureResponse, HttpStatus.OK);
     }
 
     @PostMapping("/lectures")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<LectureResponse> createLecture(
             @Validated(value = ConstraintsOrderForLectureRequestAndPostMethod.class)
             @RequestBody LectureRequest lectureRequest) {
@@ -60,6 +64,7 @@ public class LectureController {
     }
 
     @PutMapping("/lectures/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> updateLectureById(@PathVariable(value = "id") Long id,
                                                @Validated(value = ConstraintsOrderForLectureRequestAndPutMethod.class)
                                                @RequestBody LectureRequest lectureRequest) {
@@ -73,13 +78,14 @@ public class LectureController {
     }
 
     @DeleteMapping("/lectures/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<?> deleteLectureById(@PathVariable(value = "id") Long id) {
 
         boolean isDeleted = lectureService.deleteLecture(id);
         if (isDeleted) {
             return ResponseEntity.ok().build();
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
     }
 }

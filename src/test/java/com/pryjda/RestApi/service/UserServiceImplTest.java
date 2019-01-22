@@ -108,7 +108,7 @@ class UserServiceImplTest {
     @Test
     void shouldThrowWrongUserIdExceptionWhenCallingWrongId() {
         //given
-        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         //when
 
@@ -154,7 +154,7 @@ class UserServiceImplTest {
     @Test
     void shouldNotUpdateUserAndReturnFalseIfNotExistsUserWithIndicatedId() {
         //given
-        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         //when
         boolean result = userService.updateUser(13L, userRequest);
@@ -179,7 +179,7 @@ class UserServiceImplTest {
     @Test
     void shouldReturnFalseWhenDeleteUserWhoNotExists() {
         //given
-        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         //when
         boolean result = userService.deleteUser(13L);
@@ -204,7 +204,7 @@ class UserServiceImplTest {
     @Test
     void shouldNotResetPasswordAndReturnFalseIfUserWithIndicatedIdNotExists() {
         //given
-        when(userRepository.findById(anyLong())).thenReturn(Optional.ofNullable(null));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(anyString())).thenReturn("1234");
 
         //when
